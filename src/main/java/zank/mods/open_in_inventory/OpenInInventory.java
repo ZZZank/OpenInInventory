@@ -9,4 +9,7 @@ import org.apache.logging.log4j.Logger;
 public class OpenInInventory {
     public static final String ID = "open_in_inventpry";
     public static final Logger LOGGER = LogManager.getLogger(ID);
+
+    public OpenInInventory() {
+    }
 }
