@@ -28,4 +28,4 @@ stonecutter {
     }
 }
 
-rootProject.name = "StonecutterTemplate"
+rootProject.name = "OpenInInventory"
