@@ -44,6 +44,8 @@ dependencies {
     mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
     "forge"("net.minecraftforge:forge:$minecraft-${common.mod.dep("forge_loader")}")
 
+    modImplementation("dev.architectury:architectury-forge:${common.mod.dep("arch-api")}")
+
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionForge")) { isTransitive = false }
 }

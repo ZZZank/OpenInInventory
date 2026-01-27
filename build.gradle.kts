@@ -1,3 +1,5 @@
+import net.fabricmc.loom.task.RunGameTask
+
 plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
@@ -22,6 +24,10 @@ dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
     mappings("net.fabricmc:yarn:$minecraft+build.${mod.dep("yarn_build")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
+
+    modApi("dev.architectury:architectury:${mod.dep("arch-api")}") {
+        this.isTransitive = false
+    }
 }
 
 loom {
@@ -48,6 +54,7 @@ allprojects {
         mavenCentral()
         strictMaven("CurseMaven", "https://cursemaven.com", "curse.maven")
         strictMaven("Modrinth", "https://api.modrinth.com/maven", "maven.modrinth")
+        maven { url = uri("https://maven.architectury.dev/") }
     }
 
     java {
@@ -71,5 +78,9 @@ allprojects {
         // very few developers will provide source jar when publishing mods, we add param names in production jar
         // to make life easier for those who need to work with the mod
         options.compilerArgs.add("-parameters")
+    }
+
+    tasks.withType<RunGameTask>().configureEach {
+        this.jvmArgs.add("-Xmx2048m")
     }
 }

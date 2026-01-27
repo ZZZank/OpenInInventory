@@ -39,6 +39,9 @@ dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
     mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${common.mod.dep("fabric-api")}")
+
+    modImplementation("dev.architectury:architectury-fabric:${common.mod.dep("arch-api")}")
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionFabric")) { isTransitive = false }

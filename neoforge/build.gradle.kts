@@ -50,6 +50,8 @@ dependencies {
     })
     "neoForge"("net.neoforged:neoforge:${common.mod.dep("neoforge_loader")}")
 
+    modImplementation("dev.architectury:architectury-neoforge:${common.mod.dep("arch-api")}")
+
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionNeoForge")) { isTransitive = false }
 }
