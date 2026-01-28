@@ -43,7 +43,7 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${common.mod.dep("fabric-api")}")
 
     if (minecraft == "1.20.1") {
-        modRuntimeOnly("curse.maven:modernfix-790626:7515215")
+        modRuntimeOnly("curse.maven:modernfix-790626:7306748")
         modRuntimeOnly("vazkii.patchouli:Patchouli:1.20.1-84.1-FABRIC")
     }
 
