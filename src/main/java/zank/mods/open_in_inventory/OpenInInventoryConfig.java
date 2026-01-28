@@ -1,8 +1,11 @@
 package zank.mods.open_in_inventory;
 
+import com.demonwav.mcdev.annotations.Translatable;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.text.Text;
 import zank.mods.open_in_inventory.util.SimpleConfig;
 
 import java.io.IOException;
@@ -34,35 +37,54 @@ public abstract class OpenInInventoryConfig {
             new JsonPrimitive("Refresh config in-game using `/open_in_inventory refresh` command")
         );
         SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
-            cfg.getJson(
-                "screenBlacklist",
-                new JsonArray(),
-                "Class name of screen in which this mod will be disabled"
-            ),
+            getEntry(cfg, "screen_blacklist", new JsonArray()),
             new TypeToken<>() {}
         );
-        REQUIRE_EMPTY_MAIN_HAND = cfg.getBool(
-            "requireEmptyMainHand",
-            true,
-            "Disable Open in Inventory when player is holding something in main hand"
-        );
-        REQUIRE_SINGLE_STACK = cfg.getBool(
-            "requireSingleStack",
-            true,
-            "Prevent Open in Inventory from applying to item stacks containing more than one item"
-        );
-        OPEN_DELAY = cfg.getInt("openDelay", 3, "delay (in tick) from swapping item to main hand to use such item");
-        DEBUG = cfg.getBool("debug", false, "Debug logging");
+        REQUIRE_EMPTY_MAIN_HAND = getEntry(cfg, "require_empty_main_hand", true);
+        REQUIRE_SINGLE_STACK = getEntry(cfg, "require_single_stack", true);
+        OPEN_DELAY = getEntry(cfg, "open_delay", 3);
+        DEBUG = getEntry(cfg, "debug", false);
         ENABLED_ITEMS = OpenInInventory.GSON.fromJson(
-            cfg.getJson(
-                "enabledItems",
-                new JsonArray(),
-                // TODO: migrate this to lang json, for localization and version-specific comment
-                "format: { id: string, Count?: integer, nbt?: NbtCompound, sneak?: boolean }, ? means optional"
-            ),
+            getEntry(cfg, "enabled_items", new JsonArray()),
             new TypeToken<>() {}
         );
 
         cfg.write(OpenInInventory.GSON, configFile);
+    }
+
+    private static JsonElement getEntry(
+        SimpleConfig cfg,
+        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
+        JsonElement fallback
+    ) {
+        return cfg.getJson(
+            key,
+            fallback,
+            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
+        );
+    }
+
+    private static int getEntry(
+        SimpleConfig cfg,
+        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
+        int fallback
+    ) {
+        return cfg.getInt(
+            key,
+            fallback,
+            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
+        );
+    }
+
+    private static boolean getEntry(
+        SimpleConfig cfg,
+        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
+        boolean fallback
+    ) {
+        return cfg.getBool(
+            key,
+            fallback,
+            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
+        );
     }
 }

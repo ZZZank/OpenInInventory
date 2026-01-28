@@ -187,7 +187,7 @@ public class ActionHandler {
             && access.getFocusedSlot().inventory == player.getInventory()
             && OpenAction.get(stack) != null
         ) {
-            lines.add(Text.literal("Right click to use"));
+            lines.add(Text.translatable("open_in_inventory.tooltip.use"));
         }
     }
 

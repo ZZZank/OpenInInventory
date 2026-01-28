@@ -1,0 +1,11 @@
+{
+  "open_in_inventory.tooltip.": "",
+  "open_in_inventory.tooltip.use": "Right Click to open",
+  "open_in_inventory.config.": "",
+  "open_in_inventory.config.enabled_items": "format: { id: string, Count?: integer, nbt?: NbtCompound, sneak?: boolean }, ? means optional",
+  "open_in_inventory.config.debug": "Debug logging",
+  "open_in_inventory.config.open_delay": "delay (in tick) from swapping item to main hand to use such item",
+  "open_in_inventory.config.require_single_stack": "Prevent open-in-inventory from applying to item stacks containing more than one item",
+  "open_in_inventory.config.require_empty_main_hand": "Disable open-in-inventory when player is holding something in main hand",
+  "open_in_inventory.config.screen_blacklist": "Class name of screen in which this mod will be disabled"
+}

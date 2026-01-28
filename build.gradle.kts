@@ -29,6 +29,9 @@ dependencies {
     modApi("dev.architectury:architectury:${mod.dep("arch-api")}") {
         this.isTransitive = false
     }
+
+    // Source: https://mvnrepository.com/artifact/com.demonwav.mcdev/annotations
+    compileOnly("com.demonwav.mcdev:annotations:2.1.0")
 }
 
 loom {
