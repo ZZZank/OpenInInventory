@@ -3,6 +3,7 @@ import net.fabricmc.loom.task.RunGameTask
 plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
+    `repo-convention`
 }
 
 val minecraft = stonecutter.current.version
@@ -39,24 +40,6 @@ loom {
 }
 
 allprojects {
-    repositories {
-        fun strictMaven(name: String, url: String, vararg groups: String) = exclusiveContent {
-            forRepository {
-                maven(url) {
-                    this.name = name
-                }
-            }
-            filter {
-                groups.forEach(this::includeGroup)
-            }
-        }
-
-        mavenCentral()
-        strictMaven("CurseMaven", "https://cursemaven.com", "curse.maven")
-        strictMaven("Modrinth", "https://api.modrinth.com/maven", "maven.modrinth")
-        maven { url = uri("https://maven.architectury.dev/") }
-    }
-
     java {
         withSourcesJar()
         val java = if (stonecutter.eval(minecraft, ">=1.20.5")) {
@@ -81,6 +64,6 @@ allprojects {
     }
 
     tasks.withType<RunGameTask>().configureEach {
-        this.jvmArgs.add("-Xmx2048m")
+        this.jvmArgs("-Xmx2048m")
     }
 }
