@@ -42,6 +42,11 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${common.mod.dep("fabric-api")}")
 
+    if (minecraft == "1.20.1") {
+        modRuntimeOnly("curse.maven:modernfix-790626:7515215")
+        modRuntimeOnly("vazkii.patchouli:Patchouli:1.20.1-84.1-FABRIC")
+    }
+
     modImplementation("dev.architectury:architectury-fabric:${common.mod.dep("arch-api")}")
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
