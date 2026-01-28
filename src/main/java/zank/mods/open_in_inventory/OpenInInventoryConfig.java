@@ -22,7 +22,7 @@ public abstract class OpenInInventoryConfig {
     /// in ticks
     public static int OPEN_DELAY = 3;
     public static boolean DEBUG = false;
-    public static List<OpenAction.Intermediate> ENABLED_ITEMS = new ArrayList<>();
+    public static List<OpenAction> ENABLED_ITEMS = new ArrayList<>();
 
     public static void refresh(Path configFile) throws IOException {
         var cfg = new SimpleConfig();
@@ -57,7 +57,8 @@ public abstract class OpenInInventoryConfig {
             cfg.getJson(
                 "enabledItems",
                 new JsonArray(),
-                "format: { id: string, count?: integer, nbt?: NbtCompound, sneak?: boolean }, ? means optional"
+                // TODO: migrate this to lang json, for localization and version-specific comment
+                "format: { id: string, Count?: integer, nbt?: NbtCompound, sneak?: boolean }, ? means optional"
             ),
             new TypeToken<>() {}
         );

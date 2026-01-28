@@ -61,13 +61,8 @@ public class OpenInInventory {
         }
 
         OpenAction.REGISTRY.clear();
-        for (var intermediate : OpenInInventoryConfig.ENABLED_ITEMS) {
-            try {
-                var action = intermediate.toAction();
-                OpenAction.register(action.stack(), action.sneakWhenUse());
-            } catch (Exception e) {
-                LOGGER.error("Error when parsing `enabledItems` from config", e);
-            }
+        for (var action : OpenInInventoryConfig.ENABLED_ITEMS) {
+            OpenAction.register(action.stack(), action.sneakWhenUse());
         }
     }
 }

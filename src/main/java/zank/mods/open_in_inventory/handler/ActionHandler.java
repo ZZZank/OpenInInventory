@@ -7,9 +7,14 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+//? if <1.21 {
 import net.minecraft.client.item.TooltipContext;
+//? } else
+//import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+//? if >1.21
+//import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
@@ -166,7 +171,10 @@ public class ActionHandler {
         return CompoundEventResult.pass();
     }
 
+    //? if <1.21 {
     public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag) {
+    //? } else
+    //public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag, TooltipType tooltipType) {
         var screen = MinecraftClient.getInstance().currentScreen;
         var player = MinecraftClient.getInstance().player;
         if (
