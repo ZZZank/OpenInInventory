@@ -1,4 +1,4 @@
-package zank.mods.open_in_inventory.handler;
+package zank.mods.open_in_inventory.impl.handler;
 
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;

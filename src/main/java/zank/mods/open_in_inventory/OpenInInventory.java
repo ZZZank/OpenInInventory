@@ -12,8 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zank.mods.open_in_inventory.api.OpenActionProvider;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
-import zank.mods.open_in_inventory.handler.ClientEventHandler;
-import zank.mods.open_in_inventory.handler.ActionHandler;
+import zank.mods.open_in_inventory.impl.handler.ClientEventHandler;
+import zank.mods.open_in_inventory.impl.handler.ActionHandler;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.io.IOException;

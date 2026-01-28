@@ -1,4 +1,4 @@
-package zank.mods.open_in_inventory.handler;
+package zank.mods.open_in_inventory.impl.handler;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
