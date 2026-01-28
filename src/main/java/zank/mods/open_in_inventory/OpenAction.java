@@ -62,7 +62,8 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
                 json.addProperty(COUNT_KEY, 1);
             }
             var stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, json)
-                .getOrThrow(/*? if <1.21 { */true, OpenInInventory.LOGGER::error/*? } else {*//*JsonParseException::new*//*?}*/)
+                .resultOrPartial(OpenInInventory.LOGGER::error)
+                .orElseThrow()
                 .getFirst();
             var sneak = json.get("sneak").getAsBoolean();
             return new OpenAction(stack, sneak);
@@ -72,7 +73,8 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
         public JsonElement serialize(OpenAction action, Type type, JsonSerializationContext context) {
             var json = ItemStack.CODEC
                 .encodeStart(JsonOps.INSTANCE, action.stack)
-                .getOrThrow(/*? if <1.21 { */true, OpenInInventory.LOGGER::error/*? } else {*//*AssertionError::new*//*?}*/)
+                .resultOrPartial(OpenInInventory.LOGGER::error)
+                .orElseThrow()
                 .getAsJsonObject();
             json.addProperty("sneak", action.sneakWhenUse);
             return json;
