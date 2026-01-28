@@ -34,7 +34,7 @@ public abstract class OpenInInventoryConfig {
 
         cfg.addElementToWrite(
             "//",
-            new JsonPrimitive("Refresh config in-game using `/open_in_inventory refresh` command")
+            new JsonPrimitive(Text.translatable("open_in_inventory.config.refresh").getString())
         );
         SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
             getEntry(cfg, "screen_blacklist", new JsonArray()),
