@@ -34,6 +34,7 @@ public class OpenInInventory {
         ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
         ClientGuiEvent.SET_SCREEN.register(actionHandler::onScreenChange);
         ClientLifecycleEvent.CLIENT_STARTED.register(ClientEventHandler::clientStarted);
+        ClientCommandRegistrationEvent.EVENT.register(ClientEventHandler::clientCommand);
     }
 
     public static boolean isScreenBlackListed(Screen screen) {
