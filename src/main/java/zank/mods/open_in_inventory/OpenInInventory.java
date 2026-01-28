@@ -10,6 +10,8 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.util.InputUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zank.mods.open_in_inventory.handler.ClientEventHandler;
+import zank.mods.open_in_inventory.handler.ActionHandler;
 
 import java.io.IOException;
 
@@ -24,19 +26,14 @@ public class OpenInInventory {
         .setPrettyPrinting()
         .create();
 
+    public final ActionHandler actionHandler = new ActionHandler();
+
     public OpenInInventory() {
-        ClientTooltipEvent.ITEM.register(ClientEventHandler::tooltip);
-        /// less performance heavy than [ClientRawInputEvent], but not much different
-        ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(ClientEventHandler::beforeMouseClicked);
-        ClientTickEvent.CLIENT_LEVEL_PRE.register(ClientEventHandler::scheduleItemUse);
-        ClientGuiEvent.SET_SCREEN.register(ClientEventHandler::onScreenChange);
-        ClientLifecycleEvent.CLIENT_STARTED.register(client -> {
-            try {
-                OpenInInventoryConfig.refresh(Platform.getConfigFolder().resolve(ID + ".json"));
-            } catch (IOException e) {
-                OpenInInventory.LOGGER.error("Error when refreshing config", e);
-            }
-        });
+        ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
+        ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(actionHandler::beforeMouseClicked);
+        ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
+        ClientGuiEvent.SET_SCREEN.register(actionHandler::onScreenChange);
+        ClientLifecycleEvent.CLIENT_STARTED.register(ClientEventHandler::clientStarted);
     }
 
     public static boolean isScreenBlackListed(Screen screen) {
@@ -53,5 +50,23 @@ public class OpenInInventory {
         var handle = client.getWindow().getHandle();
         return InputUtil.isKeyPressed(handle, InputUtil.GLFW_KEY_LEFT_SHIFT)
                || InputUtil.isKeyPressed(handle, InputUtil.GLFW_KEY_RIGHT_SHIFT);
+    }
+
+    public static void refreshConfig() {
+        try {
+            OpenInInventoryConfig.refresh(Platform.getConfigFolder().resolve(OpenInInventory.ID + ".json"));
+        } catch (IOException e) {
+            OpenInInventory.LOGGER.error("Error when refreshing config", e);
+        }
+
+        OpenAction.REGISTRY.clear();
+        for (var intermediate : OpenInInventoryConfig.ENABLED_ITEMS) {
+            try {
+                var action = intermediate.toAction();
+                OpenAction.register(action.stack(), action.sneakWhenUse());
+            } catch (Exception e) {
+                LOGGER.error("Error when parsing `enabledItems` from config", e);
+            }
+        }
     }
 }

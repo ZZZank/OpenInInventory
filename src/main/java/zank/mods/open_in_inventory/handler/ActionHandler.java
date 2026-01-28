@@ -1,4 +1,4 @@
-package zank.mods.open_in_inventory;
+package zank.mods.open_in_inventory.handler;
 
 import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
@@ -14,6 +14,8 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
+import zank.mods.open_in_inventory.OpenInInventory;
+import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
 
 import java.util.List;
@@ -22,16 +24,16 @@ import java.util.Objects;
 /**
  * @author ZZZank
  */
-public class ClientEventHandler {
+public class ActionHandler {
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
-    private static int swapFrom;
+    private int swapFrom;
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
-    private static int swapTo;
+    private int swapTo;
 
-    private static ActionStage stage = ActionStage.IDLE;
-    private static long itemUseAtTime = -1;
+    private ActionStage stage = ActionStage.IDLE;
+    private long itemUseAtTime = -1;
 
-    public static EventResult beforeMouseClicked(
+    public EventResult beforeMouseClicked(
         MinecraftClient client,
         Screen _screen,
         double mouseX,
@@ -111,7 +113,7 @@ public class ClientEventHandler {
         return EventResult.pass();
     }
 
-    public static void scheduleItemUse(ClientWorld world) {
+    public void scheduleItemUse(ClientWorld world) {
         var client = MinecraftClient.getInstance();
         var player = client.player;
 
@@ -131,7 +133,7 @@ public class ClientEventHandler {
         }
     }
 
-    public static CompoundEventResult<Screen> onScreenChange(Screen screen) {
+    public CompoundEventResult<Screen> onScreenChange(Screen screen) {
         if (stage == ActionStage.USED && screen == null) {
             stage = ActionStage.SWAP_BACK_SCREEN;
             var client = MinecraftClient.getInstance();
@@ -142,7 +144,7 @@ public class ClientEventHandler {
         return CompoundEventResult.pass();
     }
 
-    public static void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag) {
+    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag) {
         var screen = MinecraftClient.getInstance().currentScreen;
         var player = MinecraftClient.getInstance().player;
         if (

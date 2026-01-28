@@ -7,7 +7,9 @@ import zank.mods.open_in_inventory.util.SimpleConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,6 +22,7 @@ public abstract class OpenInInventoryConfig {
     /// in ticks
     public static int OPEN_DELAY = 3;
     public static boolean DEBUG = false;
+    public static List<OpenAction.Intermediate> ENABLED_ITEMS = new ArrayList<>();
 
     public static void refresh(Path configFile) throws IOException {
         var cfg = new SimpleConfig();
@@ -50,6 +53,14 @@ public abstract class OpenInInventoryConfig {
         );
         OPEN_DELAY = cfg.getInt("openDelay", 3, "delay (in tick) from swapping item to main hand to use such item");
         DEBUG = cfg.getBool("debug", false, "Debug logging");
+        ENABLED_ITEMS = OpenInInventory.GSON.fromJson(
+            cfg.getJson(
+                "enabledItems",
+                new JsonArray(),
+                "format: { id: string, count?: integer, nbt?: NbtCompound, sneak?: boolean }, ? means optional"
+            ),
+            new TypeToken<>() {}
+        );
 
         cfg.write(OpenInInventory.GSON, configFile);
     }
