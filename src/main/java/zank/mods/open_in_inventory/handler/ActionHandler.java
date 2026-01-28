@@ -10,10 +10,12 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
+import zank.mods.open_in_inventory.OpenAction;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
@@ -32,6 +34,7 @@ public class ActionHandler {
 
     private ActionStage stage = ActionStage.IDLE;
     private long itemUseAtTime = -1;
+    private OpenAction openAction = null;
 
     public EventResult beforeMouseClicked(
         MinecraftClient client,
@@ -64,8 +67,6 @@ public class ActionHandler {
                 && screen.getScreenHandler().getCursorStack().isEmpty()
                 // mouse in player inventory
                 && focused.inventory == player.getInventory()
-                // tool-like stack in slot
-                && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || focused.getStack().getCount() == 1)
                 // target slot is free
                 && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
                 && screen.getScreenHandler().canInsertIntoSlot(focused)
@@ -74,6 +75,10 @@ public class ActionHandler {
                 swapTo = player.getInventory().selectedSlot;
 
                 var oldFocusedStack = focused.getStack();
+                var action = OpenAction.get(oldFocusedStack);
+                if (action == null) {
+                    return EventResult.pass();
+                }
 
                 if (OpenInInventoryConfig.DEBUG) {
                     OpenInInventory.LOGGER.info(
@@ -106,6 +111,7 @@ public class ActionHandler {
 
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
+                openAction = action;
 
                 return EventResult.interruptTrue();
             }
@@ -118,7 +124,23 @@ public class ActionHandler {
         var player = client.player;
 
         if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
-            client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+            var action = openAction;
+            if (action != null && action.match(player.getMainHandStack())) {
+                var shouldSneak = action.sneakWhenUse();
+                var sneaking = player.isSneaking();
+
+                if (shouldSneak != sneaking) {
+                    player.input.sneaking = shouldSneak;
+                    client.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(player.sidewaysSpeed, player.forwardSpeed, player.input.jumping, shouldSneak));
+
+                    client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+
+                    player.input.sneaking = sneaking;
+                    client.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(player.sidewaysSpeed, player.forwardSpeed, player.input.jumping, sneaking));
+                } else {
+                    client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+                }
+            }
             stage = ActionStage.USED;
         } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof InventoryScreen inv) {
             // place items back if player open inventory
@@ -150,12 +172,12 @@ public class ActionHandler {
         if (
             player != null
             && player.getInventory().getMainHandStack() != stack
-            && stack.getCount() == 1
             && screen != null
             && !OpenInInventory.isScreenBlackListed(screen)
             && screen instanceof AccessHandledScreen access
             && access.getFocusedSlot() != null
             && access.getFocusedSlot().inventory == player.getInventory()
+            && OpenAction.get(stack) != null
         ) {
             lines.add(Text.literal("Right click to use"));
         }

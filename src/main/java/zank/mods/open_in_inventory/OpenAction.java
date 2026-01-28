@@ -25,12 +25,25 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
 
     @Nullable
     public static OpenAction get(ItemStack stack) {
+        if (OpenInInventoryConfig.REQUIRE_SINGLE_STACK && stack.getCount() != 1) {
+            return null;
+        }
+
         for (var action : REGISTRY.getOrDefault(stack.getItem(), List.of())) {
-            if (ItemStack.areEqual(action.stack, stack)) {
+            if (action.match(stack)) {
                 return action;
             }
         }
         return null;
+    }
+
+    public boolean match(ItemStack stack) {
+        var match = this.stack;
+        if (match.hasNbt()) {
+            return ItemStack.areEqual(match, stack);
+        } else {
+            return stack.isOf(match.getItem());
+        }
     }
 
     public Intermediate toIntermediate() {
