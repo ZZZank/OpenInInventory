@@ -25,30 +25,38 @@ import java.util.Objects;
 public class ClientEventHandler {
     public static boolean REQUIRE_EMPTY_MAIN_HAND = true;
     public static boolean REQUIRE_SINGLE_STACK = true;
-    public static int OPEN_ACTION_DELAY_TICK = 3;
+    /// in ticks
+    public static int OPEN_ACTION_DELAY = 3;
+    public static boolean DEBUG = false;
 
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
     private static int swapFrom;
+    /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
     private static int swapTo;
 
     private static ActionStage stage = ActionStage.IDLE;
     private static long itemUseAtTime = -1;
 
-    public static EventResult beforeMouseClicked(MinecraftClient client, int button, int action, int modifiers) {
+    public static EventResult beforeMouseClicked(
+        MinecraftClient client,
+        Screen _screen,
+        double mouseX,
+        double mouseY,
+        int button
+    ) {
         if (stage != ActionStage.IDLE) {
             return EventResult.pass();
         }
 
         // Right-click without Shift
-        if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT || (modifiers & GLFW.GLFW_MOD_SHIFT) != 0 || action == 0) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT || OpenInInventory.isShiftPressed(client)) {
             return EventResult.pass();
         }
 
         var player = client.player;
         var world = client.world;
-        if (player != null && world != null && client.currentScreen instanceof HandledScreen<?> screen) {
+        if (player != null && world != null && _screen instanceof HandledScreen<?> screen) {
             if (OpenInInventory.isScreenBlackListed(screen)) {
-                // for some reason, creative inventory will eat your item
                 return EventResult.pass();
             }
 
@@ -68,16 +76,21 @@ public class ClientEventHandler {
             ) {
                 swapFrom = focused.getIndex();
                 swapTo = player.getInventory().selectedSlot;
-                OpenInInventory.LOGGER.info(
-                    "Attempt to swap slots {} with id {} with hotbar {} in gui {}",
-                    focused.getIndex(),
-                    focused.id,
-                    swapTo,
-                    screen.getClass().getName()
-                );
 
                 var oldFocusedStack = focused.getStack();
 
+                if (DEBUG) {
+                    OpenInInventory.LOGGER.info(
+                        "Attempt to swap slots {} with id {} with hotbar {} in gui {}",
+                        focused.getIndex(),
+                        focused.id,
+                        swapTo,
+                        screen.getClass().getName()
+                    );
+                }
+
+                /// the screen is not always [InventoryScreen], so we sometimes use [net.minecraft.screen.slot.Slot#id]
+                /// (relative to [net.minecraft.screen.ScreenHandler]) instead of [net.minecraft.screen.slot.Slot#getIndex()]
                 var actualSwapFrom = screen instanceof AbstractInventoryScreen
                     ? focused.getIndex()
                     : focused.id;
@@ -95,7 +108,7 @@ public class ClientEventHandler {
 
                 client.setScreen(null);
 
-                itemUseAtTime = world.getTime() + OPEN_ACTION_DELAY_TICK;
+                itemUseAtTime = world.getTime() + OPEN_ACTION_DELAY;
                 stage = ActionStage.SWAPPED;
 
                 return EventResult.interruptTrue();
