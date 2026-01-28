@@ -61,7 +61,7 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
             throws JsonParseException {
             var json = jsonElement.getAsJsonObject();
             if (!json.has(COUNT_KEY)) {
-                json.addProperty(COUNT_KEY, 1);
+                json.addProperty(COUNT_KEY, COUNT_DEFAULT);
             }
 
             var stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, json)
@@ -84,6 +84,9 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
                 .getAsJsonObject();
             if (action.sneakWhenUse != SNEAK_DEFAULT) {
                 json.addProperty("sneak", action.sneakWhenUse);
+            }
+            if (json.has(COUNT_KEY) && json.get(COUNT_KEY).getAsInt() == COUNT_DEFAULT) {
+                json.remove(COUNT_KEY);
             }
             return json;
         }
