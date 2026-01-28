@@ -19,6 +19,8 @@ import java.util.Map;
 @JsonAdapter(OpenAction.GsonAdapter.class)
 public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
     public static final Map<Item, List<OpenAction>> REGISTRY = new HashMap<>();
+    private static final boolean SNEAK_DEFAULT = false;
+    private static final int COUNT_DEFAULT = 1;
 
     public static void register(ItemStack stack, boolean sneak) {
         REGISTRY.computeIfAbsent(stack.getItem(), k -> new ArrayList<>(3))
@@ -61,11 +63,15 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
             if (!json.has(COUNT_KEY)) {
                 json.addProperty(COUNT_KEY, 1);
             }
+
             var stack = ItemStack.CODEC.decode(JsonOps.INSTANCE, json)
                 .resultOrPartial(OpenInInventory.LOGGER::error)
                 .orElseThrow()
                 .getFirst();
-            var sneak = json.get("sneak").getAsBoolean();
+
+            var sneakJson = json.get("sneak");
+            var sneak = sneakJson == null ? SNEAK_DEFAULT : sneakJson.getAsBoolean();
+
             return new OpenAction(stack, sneak);
         }
 
@@ -76,7 +82,9 @@ public record OpenAction(ItemStack stack, boolean sneakWhenUse) {
                 .resultOrPartial(OpenInInventory.LOGGER::error)
                 .orElseThrow()
                 .getAsJsonObject();
-            json.addProperty("sneak", action.sneakWhenUse);
+            if (action.sneakWhenUse != SNEAK_DEFAULT) {
+                json.addProperty("sneak", action.sneakWhenUse);
+            }
             return json;
         }
     }
