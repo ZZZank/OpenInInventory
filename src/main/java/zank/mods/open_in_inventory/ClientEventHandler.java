@@ -23,12 +23,6 @@ import java.util.Objects;
  * @author ZZZank
  */
 public class ClientEventHandler {
-    public static boolean REQUIRE_EMPTY_MAIN_HAND = true;
-    public static boolean REQUIRE_SINGLE_STACK = true;
-    /// in ticks
-    public static int OPEN_ACTION_DELAY = 3;
-    public static boolean DEBUG = false;
-
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
     private static int swapFrom;
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
@@ -69,9 +63,9 @@ public class ClientEventHandler {
                 // mouse in player inventory
                 && focused.inventory == player.getInventory()
                 // tool-like stack in slot
-                && (!REQUIRE_SINGLE_STACK || focused.getStack().getCount() == 1)
+                && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || focused.getStack().getCount() == 1)
                 // target slot is free
-                && (!REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
+                && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
                 && screen.getScreenHandler().canInsertIntoSlot(focused)
             ) {
                 swapFrom = focused.getIndex();
@@ -79,7 +73,7 @@ public class ClientEventHandler {
 
                 var oldFocusedStack = focused.getStack();
 
-                if (DEBUG) {
+                if (OpenInInventoryConfig.DEBUG) {
                     OpenInInventory.LOGGER.info(
                         "Attempt to swap slots {} with id {} with hotbar {} in gui {}",
                         focused.getIndex(),
@@ -108,7 +102,7 @@ public class ClientEventHandler {
 
                 client.setScreen(null);
 
-                itemUseAtTime = world.getTime() + OPEN_ACTION_DELAY;
+                itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
 
                 return EventResult.interruptTrue();
