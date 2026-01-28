@@ -10,8 +10,11 @@ import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.util.InputUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zank.mods.open_in_inventory.api.OpenActionProvider;
+import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.handler.ClientEventHandler;
 import zank.mods.open_in_inventory.handler.ActionHandler;
+import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.io.IOException;
 
@@ -26,6 +29,7 @@ public class OpenInInventory {
         .setPrettyPrinting()
         .create();
 
+    public static final OpenActionRegistry ACTIONS = new OpenActionRegistryImpl();
     public final ActionHandler actionHandler = new ActionHandler();
 
     public OpenInInventory() {
@@ -60,9 +64,11 @@ public class OpenInInventory {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }
 
-        OpenAction.REGISTRY.clear();
-        for (var action : OpenInInventoryConfig.ENABLED_ITEMS) {
-            OpenAction.register(action.stack(), action.sneakWhenUse());
+        ((OpenActionRegistryImpl) OpenInInventory.ACTIONS).internal.clear();
+        for (var service : OpenActionProvider.SERVICES) {
+            if (service.enabled()) {
+                service.register(OpenInInventory.ACTIONS);
+            }
         }
     }
 }

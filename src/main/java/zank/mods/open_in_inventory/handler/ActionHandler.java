@@ -20,9 +20,9 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import org.lwjgl.glfw.GLFW;
-import zank.mods.open_in_inventory.OpenAction;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.OpenInInventoryConfig;
+import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
 
 import java.util.List;
@@ -80,7 +80,7 @@ public class ActionHandler {
                 swapTo = player.getInventory().selectedSlot;
 
                 var oldFocusedStack = focused.getStack();
-                var action = OpenAction.get(oldFocusedStack);
+                var action = OpenInInventory.ACTIONS.get(oldFocusedStack);
                 if (action == null) {
                     return EventResult.pass();
                 }
@@ -131,7 +131,7 @@ public class ActionHandler {
         if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
             var action = openAction;
             if (action != null && action.match(player.getMainHandStack())) {
-                var shouldSneak = action.sneakWhenUse();
+                var shouldSneak = action.sneak();
                 var sneaking = player.isSneaking();
 
                 if (shouldSneak != sneaking) {
@@ -185,7 +185,7 @@ public class ActionHandler {
             && screen instanceof AccessHandledScreen access
             && access.getFocusedSlot() != null
             && access.getFocusedSlot().inventory == player.getInventory()
-            && OpenAction.get(stack) != null
+            && OpenInInventory.ACTIONS.get(stack) != null
         ) {
             lines.add(Text.translatable("open_in_inventory.tooltip.use"));
         }

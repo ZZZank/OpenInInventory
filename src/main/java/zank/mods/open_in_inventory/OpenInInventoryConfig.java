@@ -10,9 +10,7 @@ import zank.mods.open_in_inventory.util.SimpleConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,7 +23,7 @@ public abstract class OpenInInventoryConfig {
     /// in ticks
     public static int OPEN_DELAY = 3;
     public static boolean DEBUG = false;
-    public static List<OpenAction> ENABLED_ITEMS = new ArrayList<>();
+    public static JsonArray ENABLED_ITEMS = new JsonArray();
 
     public static void refresh(Path configFile) throws IOException {
         var cfg = new SimpleConfig();
@@ -44,10 +42,7 @@ public abstract class OpenInInventoryConfig {
         REQUIRE_SINGLE_STACK = getEntry(cfg, "require_single_stack", true);
         OPEN_DELAY = getEntry(cfg, "open_delay", 3);
         DEBUG = getEntry(cfg, "debug", false);
-        ENABLED_ITEMS = OpenInInventory.GSON.fromJson(
-            getEntry(cfg, "enabled_items", new JsonArray()),
-            new TypeToken<>() {}
-        );
+        ENABLED_ITEMS = getEntry(cfg, "enabled_items", new JsonArray()).getAsJsonArray();
 
         cfg.write(OpenInInventory.GSON, configFile);
     }
