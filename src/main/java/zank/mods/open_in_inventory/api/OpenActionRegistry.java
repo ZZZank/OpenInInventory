@@ -2,9 +2,12 @@ package zank.mods.open_in_inventory.api;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author ZZZank
@@ -17,7 +20,12 @@ public interface OpenActionRegistry {
 
     OpenAction register(ItemStack stack, boolean sneak);
 
-    default void register(Item item, boolean sneak) {
-        register(item.getDefaultStack(), sneak);
+    default OpenAction register(Item item, boolean sneak) {
+        return register(item.getDefaultStack(), sneak);
+    }
+
+    default Optional<OpenAction> registerIfPresent(Identifier itemId, boolean sneak) {
+        var item = Registries.ITEM.get(itemId);
+        return item == null ? Optional.empty() : Optional.of(register(item, sneak));
     }
 }

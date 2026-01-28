@@ -13,17 +13,14 @@ import java.util.List;
 public class OpenCommonItems implements OpenActionProvider {
     private static final List<String> ITEM_IDS = List.of(
         "extendedcrafting:handheld_table",
-        "patchouli:guide_book",
-        "scannable:scanner"
+        "patchouli:guide_book"
     );
 
     @Override
     public void register(OpenActionRegistry registry) {
+        registry.registerIfPresent(Identifier.tryParse("scannable:scanner"), true);
         for (var itemIdString : ITEM_IDS) {
-            var item = Registries.ITEM.get(Identifier.tryParse(itemIdString));
-            if (item != null) {
-                registry.register(item, false);
-            }
+            registry.registerIfPresent(Identifier.tryParse(itemIdString), false);
         }
     }
 }
