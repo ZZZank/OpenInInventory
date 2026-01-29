@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Text;
 import zank.mods.open_in_inventory.util.SimpleConfig;
 
@@ -55,11 +56,7 @@ public abstract class OpenInInventoryConfig {
         @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
         JsonElement fallback
     ) {
-        return cfg.getJson(
-            key,
-            fallback,
-            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
-        );
+        return cfg.getJson(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
     }
 
     private static int getEntry(
@@ -67,11 +64,7 @@ public abstract class OpenInInventoryConfig {
         @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
         int fallback
     ) {
-        return cfg.getInt(
-            key,
-            fallback,
-            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
-        );
+        return cfg.getInt(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
     }
 
     private static boolean getEntry(
@@ -79,10 +72,6 @@ public abstract class OpenInInventoryConfig {
         @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
         boolean fallback
     ) {
-        return cfg.getBool(
-            key,
-            fallback,
-            Text.translatable(OpenInInventory.ID + ".config." + key).getString()
-        );
+        return cfg.getBool(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
     }
 }

@@ -25,7 +25,6 @@ import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @author ZZZank
@@ -91,7 +90,7 @@ public class ActionHandler {
                 swapTo = player.getInventory().selectedSlot;
 
                 var oldFocusedStack = focused.getStack();
-                var action = OpenInInventory.ACTIONS.get(oldFocusedStack);
+                var action = OpenInInventory.ACTION_REGISTRY.get(oldFocusedStack);
                 if (action == null) {
                     return EventResult.pass();
                 }
@@ -200,7 +199,7 @@ public class ActionHandler {
             && screen instanceof AccessHandledScreen access
             && access.getFocusedSlot() != null
             && access.getFocusedSlot().inventory == player.getInventory()
-            && OpenInInventory.ACTIONS.get(stack) != null
+            && OpenInInventory.ACTION_REGISTRY.get(stack) != null
         ) {
             lines.add(Text.translatable("open_in_inventory.tooltip.use"));
         }

@@ -29,7 +29,7 @@ public abstract class OpenInInventory {
         .create();
 
     public static OpenInInventory COMMON;
-    public static final OpenActionRegistry ACTIONS = new OpenActionRegistryImpl();
+    public static final OpenActionRegistry ACTION_REGISTRY = new OpenActionRegistryImpl();
     public final ActionHandler actionHandler = new ActionHandler();
 
     public OpenInInventory() {
@@ -61,10 +61,10 @@ public abstract class OpenInInventory {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }
 
-        ((OpenActionRegistryImpl) OpenInInventory.ACTIONS).internal.clear();
+        ((OpenActionRegistryImpl) OpenInInventory.ACTION_REGISTRY).internal.clear();
         for (var service : OpenActionProvider.SERVICES) {
             if (service.enabled()) {
-                service.register(OpenInInventory.ACTIONS);
+                service.register(OpenInInventory.ACTION_REGISTRY);
             }
         }
     }
