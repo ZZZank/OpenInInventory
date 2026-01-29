@@ -132,8 +132,6 @@ public class ActionHandler {
                     }
                 }
 
-                client.setScreen(null);
-
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
                 this.action = action;
