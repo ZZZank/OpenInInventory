@@ -15,7 +15,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 //? if >1.21
 //import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -40,6 +39,7 @@ public class ActionHandler {
     private ActionStage stage = ActionStage.IDLE;
     private long itemUseAtTime = -1;
     private OpenAction openAction = null;
+    private boolean shouldUpdateSneak = false;
 
     public EventResult beforeMouseClicked(
         MinecraftClient client,
@@ -114,6 +114,12 @@ public class ActionHandler {
 
                 client.setScreen(null);
 
+                shouldUpdateSneak = action.sneak() != client.options.sneakKey.isPressed();
+                if (shouldUpdateSneak) {
+                    // use `true` instead of `action.sneak()` to handle sticky keybinding
+                    client.options.sneakKey.setPressed(true);
+                }
+
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
                 openAction = action;
@@ -131,19 +137,10 @@ public class ActionHandler {
         if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
             var action = openAction;
             if (action != null && action.match(player.getMainHandStack())) {
-                var shouldSneak = action.sneak();
-                var sneaking = player.isSneaking();
+                client.interactionManager.interactItem(player, Hand.MAIN_HAND);
 
-                if (shouldSneak != sneaking) {
-                    player.input.sneaking = shouldSneak;
-                    client.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(player.sidewaysSpeed, player.forwardSpeed, player.input.jumping, shouldSneak));
-
-                    client.interactionManager.interactItem(player, Hand.MAIN_HAND);
-
-                    player.input.sneaking = sneaking;
-                    client.getNetworkHandler().sendPacket(new PlayerInputC2SPacket(player.sidewaysSpeed, player.forwardSpeed, player.input.jumping, sneaking));
-                } else {
-                    client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+                if (shouldUpdateSneak) {
+                    client.options.sneakKey.setPressed(!action.sneak());
                 }
             }
             stage = ActionStage.USED;
