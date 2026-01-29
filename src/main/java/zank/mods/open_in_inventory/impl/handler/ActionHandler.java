@@ -157,6 +157,13 @@ public class ActionHandler {
                         client.options.sneakKey.setPressed(!action.sneak());
                     }
                 }
+                if (OpenInInventoryConfig.DEBUG) {
+                    OpenInInventory.LOGGER.info("SWAPPED -> USED, action match: {}", action);
+                }
+            } else {
+                if (OpenInInventoryConfig.DEBUG) {
+                    OpenInInventory.LOGGER.info("SWAPPED -> USED, skipped using");
+                }
             }
             stage = ActionStage.USED;
         } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
@@ -171,11 +178,11 @@ public class ActionHandler {
                     client.player
                 );
                 if (OpenInInventoryConfig.DEBUG) {
-                    OpenInInventory.LOGGER.info("Swap back, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
+                    OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
                 }
             } else {
                 if (OpenInInventoryConfig.DEBUG) {
-                    OpenInInventory.LOGGER.info("Swap back skipped");
+                    OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, swap skipped");
                 }
             }
             stage = ActionStage.IDLE;
@@ -188,6 +195,9 @@ public class ActionHandler {
             var client = MinecraftClient.getInstance();
             var player = client.player;
             if (player != null) {
+                if (OpenInInventoryConfig.DEBUG) {
+                    OpenInInventory.LOGGER.info("USED -> SWAP_BACK_SCREEN");
+                }
                 return CompoundEventResult.interruptTrue(new InventoryScreen(player));
             }
         }
