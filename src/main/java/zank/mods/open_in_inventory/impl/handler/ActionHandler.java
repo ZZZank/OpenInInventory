@@ -59,7 +59,7 @@ public class ActionHandler {
         double mouseY,
         int button
     ) {
-        if (stage != ActionStage.IDLE || OpenInInventory.isScreenBlackListed(_screen)) {
+        if (stage != ActionStage.IDLE) {
             return EventResult.pass();
         }
 
@@ -71,6 +71,10 @@ public class ActionHandler {
         var player = client.player;
         var world = client.world;
         if (player != null && world != null && _screen instanceof HandledScreen<?> screen) {
+            if (OpenInInventory.isScreenBlackListed(screen)) {
+                return EventResult.pass();
+            }
+
             var focused = ((AccessHandledScreen) screen).getFocusedSlot();
             if (
                 // mouse on something
@@ -128,6 +132,8 @@ public class ActionHandler {
                     }
                 }
 
+                client.setScreen(null);
+
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
                 this.action = action;
@@ -138,25 +144,11 @@ public class ActionHandler {
         return EventResult.pass();
     }
 
-    public EventResult afterMouseClicked(
-        MinecraftClient client,
-        Screen screen,
-        double mouseX,
-        double mouseY,
-        int action
-    ) {
-        if (stage == ActionStage.SWAPPED) {
-            client.setScreen(null);
-            stage = ActionStage.CLOSED;
-        }
-        return EventResult.pass();
-    }
-
     public void scheduleItemUse(ClientWorld world) {
         var client = MinecraftClient.getInstance();
         var player = client.player;
 
-        if (stage == ActionStage.CLOSED && player != null && world.getTime() >= itemUseAtTime) {
+        if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
             var action = this.action;
             if (action != null && action.match(player.getMainHandStack())) {
                 client.interactionManager.interactItem(player, Hand.MAIN_HAND);
@@ -219,10 +211,8 @@ public class ActionHandler {
     enum ActionStage {
         /// before anything happened
         IDLE,
-        /// stack swapped, but current gui is still opening
+        /// stack swapped, but not yet used
         SWAPPED,
-        /// GUI closed, stack not used, yet
-        CLOSED,
         /// stack used, but not yet swapped back
         USED,
         /// the screen for swapping back stack is opened

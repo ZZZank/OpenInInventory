@@ -35,7 +35,6 @@ public abstract class OpenInInventory {
     public OpenInInventory() {
         ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
         ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(actionHandler::beforeMouseClicked);
-        ClientScreenInputEvent.MOUSE_CLICKED_POST.register(actionHandler::afterMouseClicked);
         ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
         ClientGuiEvent.SET_SCREEN.register(actionHandler::onScreenChange);
         ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
