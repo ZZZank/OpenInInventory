@@ -43,7 +43,13 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${common.mod.dep("fabric-api")}")
 
     if (minecraft == "1.20.1") {
+        // Scannable: open with Shift + Right click
+        modRuntimeOnly("curse.maven:forge-config-api-port-547434:7260491")
+        modRuntimeOnly("teamreborn:energy:3.0.0")
+        modRuntimeOnly("curse.maven:scannable-266784:4763071")
+        // ModernFix: optimization
         modRuntimeOnly("curse.maven:modernfix-790626:7306748")
+        // Patchouli: open with Right click
         modRuntimeOnly("vazkii.patchouli:Patchouli:1.20.1-84.1-FABRIC")
     }
 
