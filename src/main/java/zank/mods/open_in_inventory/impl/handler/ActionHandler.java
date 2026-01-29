@@ -97,7 +97,7 @@ public class ActionHandler {
 
                 if (OpenInInventoryConfig.DEBUG) {
                     OpenInInventory.LOGGER.info(
-                        "Attempt to swap slots {} with id {} with hotbar {} in gui {}",
+                        "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
                         focused.getIndex(),
                         focused.id,
                         swapTo,
@@ -160,8 +160,8 @@ public class ActionHandler {
             }
             stage = ActionStage.USED;
         } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
-            var targetSlot = inv.getScreenHandler().slots.get(swapFrom);
-            if (inv.getScreenHandler().canInsertIntoSlot(this.action.stack(), targetSlot)) {
+            var slots = inv.getScreenHandler().slots;
+            if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(this.action.stack(), slots.get(swapFrom))) {
                 // place items back if player open inventory
                 client.interactionManager.clickSlot(
                     inv.getScreenHandler().syncId,
@@ -170,6 +170,13 @@ public class ActionHandler {
                     SlotActionType.SWAP,
                     client.player
                 );
+                if (OpenInInventoryConfig.DEBUG) {
+                    OpenInInventory.LOGGER.info("Swap back, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
+                }
+            } else {
+                if (OpenInInventoryConfig.DEBUG) {
+                    OpenInInventory.LOGGER.info("Swap back skipped");
+                }
             }
             stage = ActionStage.IDLE;
         }
@@ -193,12 +200,13 @@ public class ActionHandler {
         if (
             stage == ActionStage.IDLE
             && player != null
-            && player.getInventory().getMainHandStack() != stack
             && screen != null
             && !OpenInInventory.isScreenBlackListed(screen)
             && screen instanceof AccessHandledScreen access
             && access.getFocusedSlot() != null
             && access.getFocusedSlot().inventory == player.getInventory()
+            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || stack.getCount() == 1)
+            && player.getInventory().getMainHandStack() != stack
             && OpenInInventory.ACTION_REGISTRY.get(stack) != null
         ) {
             lines.add(Text.translatable("open_in_inventory.tooltip.use"));
