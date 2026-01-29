@@ -123,8 +123,6 @@ public class ActionHandler {
                     return EventResult.pass();
                 }
 
-                client.setScreen(null);
-
                 shouldUpdateSneak = action.sneak() != client.options.sneakKey.isPressed();
                 if (shouldUpdateSneak) {
                     if (client.options.getSneakToggled().getValue()) {
@@ -133,6 +131,8 @@ public class ActionHandler {
                         client.options.sneakKey.setPressed(action.sneak());
                     }
                 }
+
+                client.setScreen(null);
 
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
@@ -182,9 +182,10 @@ public class ActionHandler {
         if (stage == ActionStage.USED && screen == null) {
             stage = ActionStage.SWAP_BACK_SCREEN;
             var client = MinecraftClient.getInstance();
-            var player = Objects.requireNonNull(client.player);
-
-            return CompoundEventResult.interruptTrue(new InventoryScreen(player));
+            var player = client.player;
+            if (player != null) {
+                return CompoundEventResult.interruptTrue(new InventoryScreen(player));
+            }
         }
         return CompoundEventResult.pass();
     }
