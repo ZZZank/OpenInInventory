@@ -15,6 +15,8 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 //? if >1.21
 //import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
@@ -162,15 +164,18 @@ public class ActionHandler {
                 }
             }
             stage = ActionStage.USED;
-        } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof InventoryScreen inv) {
-            // place items back if player open inventory
-            client.interactionManager.clickSlot(
-                inv.getScreenHandler().syncId,
-                swapFrom,
-                swapTo,
-                SlotActionType.SWAP,
-                client.player
-            );
+        } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
+            var targetSlot = inv.getScreenHandler().slots.get(swapFrom);
+            if (inv.getScreenHandler().canInsertIntoSlot(this.action.stack(), targetSlot)) {
+                // place items back if player open inventory
+                client.interactionManager.clickSlot(
+                    inv.getScreenHandler().syncId,
+                    swapFrom,
+                    swapTo,
+                    SlotActionType.SWAP,
+                    client.player
+                );
+            }
             stage = ActionStage.IDLE;
         }
     }
@@ -193,7 +198,8 @@ public class ActionHandler {
         var screen = MinecraftClient.getInstance().currentScreen;
         var player = MinecraftClient.getInstance().player;
         if (
-            player != null
+            stage == ActionStage.IDLE
+            && player != null
             && player.getInventory().getMainHandStack() != stack
             && screen != null
             && !OpenInInventory.isScreenBlackListed(screen)
