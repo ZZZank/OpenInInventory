@@ -9,10 +9,9 @@ import java.util.List;
 /**
  * @author ZZZank
  */
-public class OpenCommonItems implements OpenActionProvider {
+public class ProvideMiscOpenAction implements OpenActionProvider {
     private static final List<String> ITEM_IDS = List.of(
-        "extendedcrafting:handheld_table",
-        "patchouli:guide_book"
+        "extendedcrafting:handheld_table"
     );
 
     @Override

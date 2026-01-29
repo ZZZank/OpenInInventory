@@ -1,6 +1,7 @@
 package zank.mods.open_in_inventory.api;
 
 import dev.architectury.platform.Platform;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.ServiceLoader;
@@ -27,6 +28,10 @@ public interface OpenActionProvider {
         @Override
         default boolean enabled() {
             return Platform.isModLoaded(requiredModId());
+        }
+
+        default Identifier id(String path) {
+            return Identifier.of(requiredModId(), path);
         }
     }
 }

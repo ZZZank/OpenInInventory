@@ -1,2 +1,4 @@
 zank.mods.open_in_inventory.impl.compat.ReadOpenActionFromConfig
-zank.mods.open_in_inventory.impl.compat.OpenCommonItems
+zank.mods.open_in_inventory.impl.compat.ProvideMiscOpenAction
+zank.mods.open_in_inventory.impl.compat.ProvideAE2OpenAction
+zank.mods.open_in_inventory.impl.compat.ProvidePatchouliBookOpenAction
