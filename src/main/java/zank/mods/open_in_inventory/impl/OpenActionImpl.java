@@ -4,6 +4,8 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenAction;
 
@@ -23,6 +25,13 @@ public record OpenActionImpl(ItemStack stack, boolean sneak) implements OpenActi
         @Override
         public OpenActionImpl deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context)
             throws JsonParseException {
+            if (jsonElement.isJsonPrimitive()) {
+                var stack = Registries.ITEM
+                    .get(Identifier.tryParse(jsonElement.getAsString()))
+                    .getDefaultStack();
+                return new OpenActionImpl(stack, false);
+            }
+
             var json = jsonElement.getAsJsonObject();
             if (!json.has(COUNT_KEY)) {
                 json.addProperty(COUNT_KEY, COUNT_DEFAULT);
