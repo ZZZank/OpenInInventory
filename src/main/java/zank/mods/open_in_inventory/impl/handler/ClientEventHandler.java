@@ -3,7 +3,7 @@ package zank.mods.open_in_inventory.impl.handler;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.ClickEvent;
@@ -21,7 +21,7 @@ import static dev.architectury.event.events.client.ClientCommandRegistrationEven
  */
 public class ClientEventHandler {
 
-    public static void clientStarted(MinecraftClient client) {
+    public static void clientStarted(ClientWorld world) {
         OpenInInventory.refreshConfig();
     }
 
