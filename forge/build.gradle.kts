@@ -59,10 +59,7 @@ loom {
     }
 
     forge.convertAccessWideners = true
-    forge.mixinConfigs(
-        "template-common.mixins.json",
-        "template-forge.mixins.json",
-    )
+    forge.mixinConfigs("template-common.mixins.json",)
 
     runConfigs.all {
         isIdeConfigGenerated = true
