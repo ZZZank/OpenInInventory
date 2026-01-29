@@ -10,20 +10,18 @@ import zank.mods.open_in_inventory.util.SimpleConfig;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author ZZZank
  */
 public abstract class OpenInInventoryConfig {
-    public static Set<String> SCREEN_BLACKLIST = new HashSet<>();
-    public static boolean REQUIRE_EMPTY_MAIN_HAND = true;
-    public static boolean REQUIRE_SINGLE_STACK = true;
-    /// in ticks
-    public static int OPEN_DELAY = 3;
-    public static boolean DEBUG = false;
-    public static JsonArray ENABLED_ITEMS = new JsonArray();
+    public static Set<String> SCREEN_BLACKLIST;
+    public static boolean REQUIRE_EMPTY_MAIN_HAND;
+    public static boolean REQUIRE_SINGLE_STACK;
+    public static int OPEN_DELAY;
+    public static boolean DEBUG;
+    public static JsonArray ENABLED_ITEMS;
 
     public static void refresh(Path configFile) throws IOException {
         var cfg = new SimpleConfig();
@@ -34,9 +32,14 @@ public abstract class OpenInInventoryConfig {
             "//",
             new JsonPrimitive(Text.translatable("open_in_inventory.config.refresh").getString())
         );
+        var _screenBlackList = OpenInInventory.GSON.toJsonTree(Set.of(
+            // for some reason, creative inventory will eat your item
+            "net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen",
+            "net.minecraft.class_481"
+        ));
         SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
-            getEntry(cfg, "screen_blacklist", new JsonArray()),
-            new TypeToken<>() {}
+            getEntry(cfg, "screen_blacklist", _screenBlackList),
+            new TypeToken<Set<String>>() {}.getType()
         );
         REQUIRE_EMPTY_MAIN_HAND = getEntry(cfg, "require_empty_main_hand", true);
         REQUIRE_SINGLE_STACK = getEntry(cfg, "require_single_stack", true);

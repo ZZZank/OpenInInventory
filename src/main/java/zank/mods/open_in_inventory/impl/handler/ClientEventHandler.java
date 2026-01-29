@@ -47,7 +47,7 @@ public class ClientEventHandler {
                                 .fillStyle(Style.EMPTY
                                     .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, msg))
                                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy"))));
-                            cx.getSource().arch$sendSuccess(message, false);
+                            cx.getSource().arch$sendSuccess(message/*?if <1.20 {*//*.get()*//*?}*/, false);
                         });
                     return Command.SINGLE_SUCCESS;
                 }))
