@@ -36,10 +36,21 @@ public class ActionHandler {
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
     private int swapTo;
 
-    private ActionStage stage = ActionStage.IDLE;
-    private long itemUseAtTime = -1;
-    private OpenAction openAction = null;
-    private boolean shouldUpdateSneak = false;
+    private ActionStage stage;
+    private long itemUseAtTime;
+    private OpenAction action;
+    private boolean shouldUpdateSneak;
+
+    public ActionHandler() {
+        reset();
+    }
+
+    public void reset() {
+        stage = ActionStage.IDLE;
+        itemUseAtTime = -1;
+        action = null;
+        shouldUpdateSneak = false;
+    }
 
     public EventResult beforeMouseClicked(
         MinecraftClient client,
@@ -95,8 +106,8 @@ public class ActionHandler {
                     );
                 }
 
-                /// the screen is not always [InventoryScreen], so we sometimes use [net.minecraft.screen.slot.Slot#id]
-                /// (relative to [net.minecraft.screen.ScreenHandler]) instead of [net.minecraft.screen.slot.Slot#getIndex()]
+                /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
+                /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
                 var actualSwapFrom = screen instanceof AbstractInventoryScreen
                     ? focused.getIndex()
                     : focused.id;
@@ -125,7 +136,7 @@ public class ActionHandler {
 
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
                 stage = ActionStage.SWAPPED;
-                openAction = action;
+                this.action = action;
 
                 return EventResult.interruptTrue();
             }
@@ -138,7 +149,7 @@ public class ActionHandler {
         var player = client.player;
 
         if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
-            var action = openAction;
+            var action = this.action;
             if (action != null && action.match(player.getMainHandStack())) {
                 client.interactionManager.interactItem(player, Hand.MAIN_HAND);
 

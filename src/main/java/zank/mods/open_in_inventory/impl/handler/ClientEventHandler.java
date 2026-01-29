@@ -33,6 +33,7 @@ public class ClientEventHandler {
             .then(literal("refresh")
                 .executes(cx -> {
                     OpenInInventory.refreshConfig();
+                    OpenInInventory.COMMON.actionHandler.reset();
                     return Command.SINGLE_SUCCESS;
                 })
             )
