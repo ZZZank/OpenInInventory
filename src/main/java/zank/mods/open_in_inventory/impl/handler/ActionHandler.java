@@ -116,8 +116,11 @@ public class ActionHandler {
 
                 shouldUpdateSneak = action.sneak() != client.options.sneakKey.isPressed();
                 if (shouldUpdateSneak) {
-                    // use `true` instead of `action.sneak()` to handle sticky keybinding
-                    client.options.sneakKey.setPressed(true);
+                    if (client.options.getSneakToggled().getValue()) {
+                        client.options.sneakKey.setPressed(true);
+                    } else {
+                        client.options.sneakKey.setPressed(action.sneak());
+                    }
                 }
 
                 itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
@@ -140,7 +143,11 @@ public class ActionHandler {
                 client.interactionManager.interactItem(player, Hand.MAIN_HAND);
 
                 if (shouldUpdateSneak) {
-                    client.options.sneakKey.setPressed(!action.sneak());
+                    if (client.options.getSneakToggled().getValue()) {
+                        client.options.sneakKey.setPressed(true);
+                    } else {
+                        client.options.sneakKey.setPressed(!action.sneak());
+                    }
                 }
             }
             stage = ActionStage.USED;
