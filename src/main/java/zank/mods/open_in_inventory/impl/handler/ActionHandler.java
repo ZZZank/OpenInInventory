@@ -13,8 +13,6 @@ import net.minecraft.client.item.TooltipContext;
 //import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
-//? if >1.21
-//import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -191,10 +189,7 @@ public class ActionHandler {
         return CompoundEventResult.pass();
     }
 
-    //? if <1.21 {
-    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag) {
-    //? } else
-    //public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag, TooltipType tooltipType) {
+    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
         var screen = MinecraftClient.getInstance().currentScreen;
         var player = MinecraftClient.getInstance().player;
         if (

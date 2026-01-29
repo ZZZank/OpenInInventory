@@ -1,8 +1,6 @@
 package zank.mods.open_in_inventory.impl.compat;
 
-import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import zank.mods.open_in_inventory.api.OpenActionProvider;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
@@ -21,7 +19,7 @@ public class ProvidePatchouliBookOpenAction implements OpenActionProvider.Requir
         if (action.isPresent()) {
             var item0 = action.get().stack().getItem();
             var type = item0.getClass();
-            for (var item : /*? if <1.20 {*//*Registry*//*?} else {*/Registries/*?}*/.ITEM) {
+            for (var item : Registries.ITEM) {
                 if (type.isInstance(item) && item != item0) {
                     registry.register(item, false);
                 }

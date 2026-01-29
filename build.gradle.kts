@@ -42,6 +42,13 @@ loom {
     }
 }
 
+stonecutter {
+    replacements.string(eval(minecraft, "<1.20")) {
+        replace("net.minecraft.registry.Registries", "net.minecraft.util.registry.Registry")
+        replace("Registries.", "Registry.")
+    }
+}
+
 allprojects {
     java {
         withSourcesJar()
