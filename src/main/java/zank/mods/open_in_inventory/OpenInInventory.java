@@ -16,7 +16,6 @@ import zank.mods.open_in_inventory.impl.handler.ActionHandler;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 /**
  * @author ZZZank
@@ -42,8 +41,6 @@ public abstract class OpenInInventory {
         ClientCommandRegistrationEvent.EVENT.register(ClientEventHandler::clientCommand);
     }
 
-    public abstract String toRuntimeClassName(String className);
-
     public static boolean isScreenBlackListed(Screen screen) {
         if (screen == null) {
             return true; // I mean, yeah
@@ -63,11 +60,6 @@ public abstract class OpenInInventory {
         } catch (IOException e) {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }
-
-        OpenInInventoryConfig.SCREEN_BLACKLIST = OpenInInventoryConfig.SCREEN_BLACKLIST
-            .stream()
-            .map(OpenInInventory.COMMON::toRuntimeClassName)
-            .collect(Collectors.toSet());
 
         ((OpenActionRegistryImpl) OpenInInventory.ACTIONS).internal.clear();
         for (var service : OpenActionProvider.SERVICES) {
