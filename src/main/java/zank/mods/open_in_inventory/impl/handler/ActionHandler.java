@@ -216,7 +216,7 @@ public class ActionHandler {
             && access.getFocusedSlot() != null
             && access.getFocusedSlot().inventory == player.getInventory()
             && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || stack.getCount() == 1)
-            && player.getInventory().getMainHandStack() != stack
+            && player.getInventory().getMainHandStack().isEmpty()
             && OpenInInventory.ACTION_REGISTRY.get(stack) != null
         ) {
             lines.add(Text.translatable("open_in_inventory.tooltip.use"));
