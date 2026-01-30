@@ -12,6 +12,7 @@ import net.minecraft.client.item.TooltipContext;
 //? } else
 //import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -54,89 +55,75 @@ public class ActionHandler {
     public EventResult beforeMouseClicked(
         MinecraftClient client,
         Screen _screen,
+        @SuppressWarnings("unused")
         double mouseX,
+        @SuppressWarnings("unused")
         double mouseY,
         int button
     ) {
-        if (stage != ActionStage.IDLE) {
-            return EventResult.pass();
-        }
-
         // Right-click without Shift
         if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT || OpenInInventory.isShiftPressed(client)) {
             return EventResult.pass();
         }
-
         var player = client.player;
         var world = client.world;
         if (player != null && world != null && _screen instanceof HandledScreen<?> screen) {
-            if (OpenInInventory.isScreenBlackListed(screen)) {
+            var focused = ((AccessHandledScreen) screen).getFocusedSlot();
+            if (focused == null) {
                 return EventResult.pass();
             }
 
-            var focused = ((AccessHandledScreen) screen).getFocusedSlot();
-            if (
-                // mouse on something
-                focused != null
-                // mouse not holding anything
-                && screen.getScreenHandler().getCursorStack().isEmpty()
-                // mouse in player inventory
-                && focused.inventory == player.getInventory()
-                // target slot is free
-                && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
-                && screen.getScreenHandler().canInsertIntoSlot(focused)
-            ) {
-                swapFrom = focused.getIndex();
-                swapTo = player.getInventory().selectedSlot;
-
-                var oldFocusedStack = focused.getStack();
-                var action = OpenInInventory.ACTION_REGISTRY.get(oldFocusedStack);
-                if (action == null) {
-                    return EventResult.pass();
-                }
-
-                if (OpenInInventoryConfig.DEBUG) {
-                    OpenInInventory.LOGGER.info(
-                        "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
-                        focused.getIndex(),
-                        focused.id,
-                        swapTo,
-                        screen
-                    );
-                }
-
-                /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
-                /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
-                var actualSwapFrom = screen instanceof AbstractInventoryScreen
-                    ? focused.getIndex()
-                    : focused.id;
-                client.interactionManager.clickSlot(
-                    screen.getScreenHandler().syncId,
-                    actualSwapFrom,
-                    swapTo,
-                    SlotActionType.SWAP,
-                    player
-                );
-
-                if (player.getMainHandStack() != oldFocusedStack) {
-                    return EventResult.pass();
-                }
-
-                shouldUpdateSneak = action.sneak() != client.options.sneakKey.isPressed();
-                if (shouldUpdateSneak) {
-                    if (client.options.getSneakToggled().getValue()) {
-                        client.options.sneakKey.setPressed(true);
-                    } else {
-                        client.options.sneakKey.setPressed(action.sneak());
-                    }
-                }
-
-                itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
-                stage = ActionStage.SWAPPED;
-                this.action = action;
-
-                return EventResult.interruptTrue();
+            var matched = matchAction(_screen, player, focused.getStack());
+            if (matched == null) {
+                return EventResult.pass();
             }
+
+            swapFrom = focused.getIndex();
+            swapTo = player.getInventory().selectedSlot;
+
+            var stackBeforeSwap = focused.getStack();
+
+            if (OpenInInventoryConfig.DEBUG) {
+                OpenInInventory.LOGGER.info(
+                    "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
+                    focused.getIndex(),
+                    focused.id,
+                    swapTo,
+                    screen
+                );
+            }
+
+            /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
+            /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
+            var actualSwapFrom = screen instanceof AbstractInventoryScreen
+                ? focused.getIndex()
+                : focused.id;
+            client.interactionManager.clickSlot(
+                screen.getScreenHandler().syncId,
+                actualSwapFrom,
+                swapTo,
+                SlotActionType.SWAP,
+                player
+            );
+
+            if (player.getMainHandStack() != stackBeforeSwap) {
+                return EventResult.pass();
+            }
+
+            shouldUpdateSneak = matched.sneak() != client.options.sneakKey.isPressed();
+            if (shouldUpdateSneak) {
+                if (client.options.getSneakToggled().getValue()) {
+                    client.options.sneakKey.setPressed(true);
+                } else {
+                    client.options.sneakKey.setPressed(matched.sneak());
+                }
+            }
+
+            itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
+            stage = ActionStage.SWAPPED;
+            action = matched;
+
+            return EventResult.interruptTrue();
         }
         return EventResult.pass();
     }
@@ -204,23 +191,40 @@ public class ActionHandler {
         return CompoundEventResult.pass();
     }
 
-    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext flag/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
-        var screen = MinecraftClient.getInstance().currentScreen;
-        var player = MinecraftClient.getInstance().player;
-        if (
-            stage == ActionStage.IDLE
-            && player != null
-            && screen != null
-            && !OpenInInventory.isScreenBlackListed(screen)
-            && screen instanceof AccessHandledScreen access
-            && access.getFocusedSlot() != null
-            && access.getFocusedSlot().inventory == player.getInventory()
-            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || stack.getCount() == 1)
-            && player.getInventory().getMainHandStack().isEmpty()
-            && OpenInInventory.ACTION_REGISTRY.get(stack) != null
-        ) {
+    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext ignored/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
+        var client = MinecraftClient.getInstance();
+        var matched = matchAction(client.currentScreen, client.player, stack);
+        if (matched != null) {
             lines.add(Text.translatable("open_in_inventory.tooltip.use"));
         }
+    }
+
+    private OpenAction matchAction(Screen screen, PlayerEntity player, ItemStack stack) {
+        if (
+            // basic
+            stage == ActionStage.IDLE
+            && screen != null
+            && player != null
+            // config
+            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || stack.getCount() == 1)
+            && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
+            && !OpenInInventory.isScreenBlackListed(screen)
+            // focused slot
+            && screen instanceof AccessHandledScreen access
+        ) {
+            var focused = access.getFocusedSlot();
+            if (
+                focused != null
+                && focused.inventory == player.getInventory()
+                // container
+                && screen instanceof HandledScreen<?> handled
+                && handled.getScreenHandler().getCursorStack().isEmpty()
+                && handled.getScreenHandler().canInsertIntoSlot(focused)
+            ) {
+                return OpenInInventory.ACTION_REGISTRY.get(stack);
+            }
+        }
+        return null;
     }
 
     enum ActionStage {

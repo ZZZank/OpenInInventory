@@ -21,9 +21,6 @@ public class OpenActionRegistryImpl implements OpenActionRegistry {
 
     @Override
     public OpenAction get(ItemStack stack) {
-        if (OpenInInventoryConfig.REQUIRE_SINGLE_STACK && stack.getCount() != 1) {
-            return null;
-        }
         for (var action : internal.getOrDefault(stack.getItem(), List.of())) {
             if (action.match(stack)) {
                 return action;
