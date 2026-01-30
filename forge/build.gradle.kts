@@ -54,6 +54,11 @@ dependencies {
         modRuntimeOnly("curse.maven:applied-energistics-2-223794:7148487")
     }
 
+    // we don't need platform specific API, so kubejs instead of kubejs-{platform}
+    modCompileOnly("dev.latvian.mods:kubejs:${common.mod.dep("kubejs")}") {
+        isTransitive = false
+    }
+
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionForge")) { isTransitive = false }
 }

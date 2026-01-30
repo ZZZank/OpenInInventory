@@ -55,6 +55,13 @@ dependencies {
 
     modImplementation("dev.architectury:architectury-fabric:${common.mod.dep("arch-api")}")
 
+    if (stonecutter.current.parsed < "1.21") {
+        // we don't need platform specific API, so kubejs instead of kubejs-{platform}
+        modCompileOnly("dev.latvian.mods:kubejs:${common.mod.dep("kubejs")}") {
+            isTransitive = false
+        }
+    }
+
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionFabric")) { isTransitive = false }
 }
@@ -76,6 +83,7 @@ loom {
 tasks.shadowJar {
     configurations = listOf(shadowBundle)
     archiveClassifier = "dev-shadow"
+    mergeServiceFiles()
 }
 
 tasks.remapJar {

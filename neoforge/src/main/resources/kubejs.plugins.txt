@@ -1,0 +1,1 @@
+zank.mods.open_in_inventory.neoforge.kubejs.OpenInInventoryKJSPlugin
