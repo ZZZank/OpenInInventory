@@ -20,8 +20,16 @@ public interface OpenActionRegistry {
 
     OpenAction register(ItemStack stack, boolean sneak);
 
+    default OpenAction register(ItemStack stack) {
+        return register(stack, false);
+    }
+
     default OpenAction register(Item item, boolean sneak) {
         return register(item.getDefaultStack(), sneak);
+    }
+
+    default OpenAction register(Item stack) {
+        return register(stack, false);
     }
 
     default Optional<OpenAction> registerIfPresent(Identifier itemId, boolean sneak) {
