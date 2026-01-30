@@ -125,7 +125,7 @@ public class ActionHandler {
             stage = ActionStage.SWAPPED;
             action = matched;
 
-            return EventResult.interruptTrue();
+            return EventResult.interruptFalse();
         }
         return EventResult.pass();
     }
