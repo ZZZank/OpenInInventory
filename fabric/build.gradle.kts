@@ -2,6 +2,7 @@ plugins {
     id("dev.architectury.loom")
     id("architectury-plugin")
     id("com.gradleup.shadow")
+    id("lol.bai.explosion")
     `repo-convention`
 }
 
@@ -45,8 +46,7 @@ dependencies {
     if (minecraft == "1.20.1") {
         // Scannable: open with Shift + Right click
         modRuntimeOnly("curse.maven:forge-config-api-port-547434:7260491")
-        modRuntimeOnly("teamreborn:energy:3.0.0")
-        modRuntimeOnly("curse.maven:scannable-266784:4763071")
+        modRuntimeOnly(explosion.fabric("curse.maven:scannable-266784:4763071"))
         // ModernFix: optimization
         modRuntimeOnly("curse.maven:modernfix-790626:7306748")
         // Patchouli: open with Right click

@@ -47,6 +47,13 @@ dependencies {
 
     modImplementation("dev.architectury:architectury-forge:${common.mod.dep("arch-api")}")
 
+    if (minecraft == "1.20.1") {
+        runtimeOnly("io.github.llamalad7:mixinextras-forge:0.5.3")
+        modRuntimeOnly("curse.maven:modernfix-790626:7515215")
+        modRuntimeOnly("curse.maven:guideme-1173950:7127447")
+        modRuntimeOnly("curse.maven:applied-energistics-2-223794:7148487")
+    }
+
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionForge")) { isTransitive = false }
 }
