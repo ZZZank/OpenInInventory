@@ -1,6 +1,5 @@
 package zank.mods.open_in_inventory.impl.handler;
 
-import dev.architectury.event.CompoundEventResult;
 import dev.architectury.event.EventResult;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -186,8 +185,8 @@ public class ActionHandler {
         }
     }
 
-    public CompoundEventResult<Screen> onScreenChange(Screen screen) {
-        if (stage == ActionStage.USED && screen == null) {
+    public void screenClosed() {
+        if (stage == ActionStage.USED) {
             stage = ActionStage.SWAP_BACK_SCREEN;
             var client = MinecraftClient.getInstance();
             var player = client.player;
@@ -195,10 +194,9 @@ public class ActionHandler {
                 if (OpenInInventoryConfig.DEBUG) {
                     OpenInInventory.LOGGER.info("USED -> SWAP_BACK_SCREEN");
                 }
-                return CompoundEventResult.interruptTrue(new InventoryScreen(player));
+                client.setScreen(new InventoryScreen(player));
             }
         }
-        return CompoundEventResult.pass();
     }
 
     public void tooltip(ItemStack stack, List<Text> lines, TooltipContext ignored/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
