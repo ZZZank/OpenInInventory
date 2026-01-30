@@ -101,7 +101,7 @@ public class ActionHandler {
                         focused.getIndex(),
                         focused.id,
                         swapTo,
-                        screen.getClass().getName()
+                        screen
                     );
                 }
 
@@ -168,7 +168,7 @@ public class ActionHandler {
             stage = ActionStage.USED;
         } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
             var slots = inv.getScreenHandler().slots;
-            if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(this.action.stack(), slots.get(swapFrom))) {
+            if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
                 // place items back if player open inventory
                 client.interactionManager.clickSlot(
                     inv.getScreenHandler().syncId,

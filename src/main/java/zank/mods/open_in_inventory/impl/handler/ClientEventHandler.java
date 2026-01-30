@@ -29,7 +29,8 @@ public class ClientEventHandler {
         CommandDispatcher<ClientCommandSourceStack> dispatcher,
         CommandRegistryAccess context
     ) {
-        dispatcher.register(literal(OpenInInventory.ID)
+        // open-in-inventory is easier to typed
+        dispatcher.register(literal(OpenInInventory.ID.replace('_', '-'))
             .then(literal("refresh")
                 .executes(cx -> {
                     OpenInInventory.refreshConfig();
