@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.item.TooltipContext;
 //? } else
 //import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,8 @@ public class ActionHandler {
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
     private int swapFrom;
     /// we assume that both [#swapFrom] and [#swapTo] is targeting [InventoryScreen]
+    ///
+    /// Always point to a slot in hotbar, so will always be less than 9
     private int swapTo;
 
     private ActionStage stage;
@@ -93,18 +96,18 @@ public class ActionHandler {
                 );
             }
 
-            /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
-            /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
-            var actualSwapFrom = screen instanceof AbstractInventoryScreen
-                ? focused.getIndex()
-                : focused.id;
-            client.interactionManager.clickSlot(
-                screen.getScreenHandler().syncId,
-                actualSwapFrom,
-                swapTo,
-                SlotActionType.SWAP,
-                player
-            );
+            if (swapFrom < 9) {
+                // In Forge, swapping stack between stacks in hotbar will fail
+                // I don't know why, but let's just avoid swapping stack
+                player.getInventory().selectedSlot = swapTo;
+            } else {
+                /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
+                /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
+                var actualSwapFrom = screen instanceof AbstractInventoryScreen
+                    ? focused.getIndex()
+                    : focused.id;
+                performSwap(client, screen, actualSwapFrom, player);
+            }
 
             if (player.getMainHandStack() != stackBeforeSwap) {
                 return EventResult.pass();
@@ -126,6 +129,17 @@ public class ActionHandler {
             return EventResult.interruptTrue();
         }
         return EventResult.pass();
+    }
+
+    private void performSwap(MinecraftClient client, HandledScreen<?> screen, int swapFrom, ClientPlayerEntity player) {
+        assert client.interactionManager != null;
+        client.interactionManager.clickSlot(
+            screen.getScreenHandler().syncId,
+            swapFrom,
+            swapTo,
+            SlotActionType.SWAP,
+            player
+        );
     }
 
     public void scheduleItemUse(ClientWorld world) {
@@ -153,17 +167,13 @@ public class ActionHandler {
                 }
             }
             stage = ActionStage.USED;
-        } else if (stage == ActionStage.SWAP_BACK_SCREEN && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
+        } else if (stage == ActionStage.SWAP_BACK_SCREEN && player != null && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
             var slots = inv.getScreenHandler().slots;
-            if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
+            if (swapFrom < 9) {
+                player.getInventory().selectedSlot = swapFrom;
+            } else if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
                 // place items back if player open inventory
-                client.interactionManager.clickSlot(
-                    inv.getScreenHandler().syncId,
-                    swapFrom,
-                    swapTo,
-                    SlotActionType.SWAP,
-                    client.player
-                );
+                performSwap(client, inv, swapFrom, player);
                 if (OpenInInventoryConfig.DEBUG) {
                     OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
                 }
