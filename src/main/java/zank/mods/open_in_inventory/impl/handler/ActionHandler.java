@@ -98,7 +98,7 @@ public class ActionHandler {
             if (swapFrom < 9) {
                 // In Forge, swapping stack between stacks in hotbar will fail
                 // I don't know why, but let's just avoid swapping stack
-                player.getInventory().selectedSlot = swapTo;
+                player.getInventory().selectedSlot = swapFrom;
             } else {
                 /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
                 /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
@@ -169,7 +169,7 @@ public class ActionHandler {
         } else if (stage == ActionStage.SWAP_BACK_SCREEN && player != null && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
             var slots = inv.getScreenHandler().slots;
             if (swapFrom < 9) {
-                player.getInventory().selectedSlot = swapFrom;
+                player.getInventory().selectedSlot = swapTo;
             } else if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
                 // place items back if player open inventory
                 performSwap(client, inv, swapFrom, player);
