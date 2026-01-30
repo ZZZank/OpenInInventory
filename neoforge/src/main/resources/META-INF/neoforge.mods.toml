@@ -13,3 +13,12 @@ logoBlur = false
 
 [[mixins]]
 config = "template-common.mixins.json"
+
+[[dependencies.${id}]]
+modId = "minecraft"
+mandatory = true
+versionRange = "${minecraft}"
+
+[[dependencies.${id}]]
+modId = "architectury"
+mandatory = true
