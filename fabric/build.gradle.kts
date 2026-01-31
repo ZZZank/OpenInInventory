@@ -57,7 +57,11 @@ dependencies {
 
     if (stonecutter.current.parsed < "1.21") {
         // we don't need platform specific API, so kubejs instead of kubejs-{platform}
-        modCompileOnly("dev.latvian.mods:kubejs:${common.mod.dep("kubejs")}")
+        modCompileOnly("dev.latvian.mods:kubejs:${common.mod.dep("kubejs")}") {
+            isTransitive = false
+        }
+        // Rhino is here only just prevent compiler from complaining "dev.latvian.mods.rhino.BaseFunction not found"
+        modCompileOnly("dev.latvian.mods:rhino:${common.mod.dep("rhino")}")
     }
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }

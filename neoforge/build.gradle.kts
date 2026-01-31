@@ -54,7 +54,11 @@ dependencies {
     modImplementation("dev.architectury:architectury-neoforge:${common.mod.dep("arch-api")}")
 
     // there's no common kubejs in 1.21+, only kubejs-neoforge
-    modCompileOnly("dev.latvian.mods:kubejs-neoforge:${common.mod.dep("kubejs")}")
+    modCompileOnly("dev.latvian.mods:kubejs-neoforge:${common.mod.dep("kubejs")}") {
+        isTransitive = false
+    }
+    // Rhino is here only just prevent compiler from complaining "dev.latvian.mods.rhino.BaseFunction not found"
+    modCompileOnly("dev.latvian.mods:rhino:${common.mod.dep("rhino")}")
 
     commonBundle(project(common.path, "namedElements")) { isTransitive = false }
     shadowBundle(project(common.path, "transformProductionNeoForge")) { isTransitive = false }
