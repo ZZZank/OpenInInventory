@@ -33,13 +33,8 @@ public abstract class OpenInInventoryConfig {
             "//",
             new JsonPrimitive(Text.translatable("open_in_inventory.config.refresh").getString())
         );
-        var _screenBlackList = OpenInInventory.GSON.toJsonTree(Set.of(
-            // for some reason, creative inventory will eat your item
-            "net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen",
-            "net.minecraft.class_481"
-        ));
         SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
-            getEntry(cfg, "screen_blacklist", _screenBlackList),
+            getEntry(cfg, "screen_blacklist", new JsonArray()),
             new TypeToken<Set<String>>() {}.getType()
         );
         REQUIRE_EMPTY_MAIN_HAND = getEntry(cfg, "require_empty_main_hand", true);

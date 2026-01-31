@@ -72,7 +72,8 @@ public abstract class OpenInInventory {
         if (screen == null) {
             return true; // I mean, yeah
         }
-        return OpenInInventoryConfig.SCREEN_BLACKLIST.contains(screen.getClass().getName());
+        var blacklist = OpenInInventoryConfig.SCREEN_BLACKLIST;
+        return !blacklist.isEmpty() && blacklist.contains(screen.getClass().getName());
     }
 
     public static boolean isShiftPressed(MinecraftClient client) {
