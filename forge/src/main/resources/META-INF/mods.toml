@@ -8,7 +8,7 @@ version = "${version}"
 displayName = "${name}"
 authors = "Zank"
 description = "Open guidebooks, backpacks, handhelds and more with a single click in inventory"
-logoFile = "assets/${id}/icon.png"
+logoFile = "icon.png"
 logoBlur = false
 
 [[mixins]]
