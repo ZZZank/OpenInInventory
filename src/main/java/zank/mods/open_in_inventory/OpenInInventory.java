@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.architectury.event.events.client.*;
 import dev.architectury.platform.Platform;
+import dev.architectury.utils.Env;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.InputUtil;
@@ -42,13 +43,15 @@ public abstract class OpenInInventory {
     public OpenInInventory() {
         registerPlugin(OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS);
 
-        ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
-        ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(actionHandler::beforeMouseClicked);
-        ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
-        ScreenClosedEvent.EVENT.register(actionHandler::screenClosed);
-        ClientTickEvent.CLIENT_POST.register(ClientEventHandler::tick);
-        ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
-        ClientCommandRegistrationEvent.EVENT.register(ClientEventHandler::clientCommand);
+        if (Platform.getEnvironment() == Env.CLIENT) {
+            ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
+            ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(actionHandler::beforeMouseClicked);
+            ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
+            ScreenClosedEvent.EVENT.register(actionHandler::screenClosed);
+            ClientTickEvent.CLIENT_POST.register(ClientEventHandler::tick);
+            ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
+            ClientCommandRegistrationEvent.EVENT.register(ClientEventHandler::clientCommand);
+        }
     }
 
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
