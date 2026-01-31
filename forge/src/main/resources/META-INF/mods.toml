@@ -22,3 +22,4 @@ versionRange = "${minecraft}"
 [[dependencies.${id}]]
 modId = "architectury"
 mandatory = true
+versionRange = "[0.0,)" # for some reason you can't just leave it to be the default value
