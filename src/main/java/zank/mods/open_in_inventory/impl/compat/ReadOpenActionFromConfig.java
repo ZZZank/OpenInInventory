@@ -2,17 +2,17 @@ package zank.mods.open_in_inventory.impl.compat;
 
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.OpenInInventoryConfig;
-import zank.mods.open_in_inventory.api.OpenActionProvider;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
+import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.impl.OpenActionImpl;
 
 /**
  * @author ZZZank
  */
-public class ReadOpenActionFromConfig implements OpenActionProvider {
+public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
 
     @Override
-    public void register(OpenActionRegistry registry) {
+    public void registerAction(OpenActionRegistry registry) {
         for (var jsonElement : OpenInInventoryConfig.ENABLED_ITEMS) {
             try {
                 var action = OpenInInventory.GSON.fromJson(jsonElement, OpenActionImpl.class);

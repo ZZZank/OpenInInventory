@@ -36,4 +36,8 @@ public interface OpenActionRegistry {
         var item = Registries.ITEM.get(itemId);
         return item == null ? Optional.empty() : Optional.of(register(item, sneak));
     }
+
+    default Optional<OpenAction> registerIfPresent(Identifier itemId) {
+        return registerIfPresent(itemId, false);
+    }
 }

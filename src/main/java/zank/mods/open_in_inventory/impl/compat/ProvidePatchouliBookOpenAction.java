@@ -1,20 +1,19 @@
 package zank.mods.open_in_inventory.impl.compat;
 
 import net.minecraft.registry.Registries;
-import zank.mods.open_in_inventory.api.OpenActionProvider;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
 /**
  * @author ZZZank
  */
-public class ProvidePatchouliBookOpenAction implements OpenActionProvider.RequireMod {
+public class ProvidePatchouliBookOpenAction implements ModSupportPlugin {
     @Override
     public String requiredModId() {
         return "patchouli";
     }
 
     @Override
-    public void register(OpenActionRegistry registry) {
+    public void registerAction(OpenActionRegistry registry) {
         var action = registry.registerIfPresent(id("guide_book"), false);
         if (action.isPresent()) {
             var item0 = action.get().stack().getItem();

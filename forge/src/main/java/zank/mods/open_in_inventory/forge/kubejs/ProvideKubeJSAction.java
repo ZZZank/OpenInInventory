@@ -1,20 +1,15 @@
 package zank.mods.open_in_inventory.forge.kubejs;
 
-import zank.mods.open_in_inventory.api.OpenActionProvider;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
+import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 
 /**
  * @author ZZZank
  */
-public class ProvideKubeJSAction implements OpenActionProvider.RequireMod {
+public class ProvideKubeJSAction implements OpenInInventoryPlugin {
 
     @Override
-    public String requiredModId() {
-        return "kubejs";
-    }
-
-    @Override
-    public void register(OpenActionRegistry registry) {
+    public void registerAction(OpenActionRegistry registry) {
         OpenInInvEvents.ACTION_REGISTRY.post(new ActionRegistryEventJS(registry));
     }
 }
