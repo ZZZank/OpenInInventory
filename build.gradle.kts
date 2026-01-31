@@ -30,7 +30,9 @@ dependencies {
         this.isTransitive = false
     }
 
-    compileOnly("com.blamejared.crafttweaker:CraftTweaker-common-${minecraft}:${mod.dep("crafttweaker")}")
+    compileOnly("com.blamejared.crafttweaker:CraftTweaker-common-${minecraft}:${mod.dep("crafttweaker")}") {
+        isTransitive = false
+    }
 
     // Source: https://mvnrepository.com/artifact/com.demonwav.mcdev/annotations
     compileOnly("com.demonwav.mcdev:annotations:2.1.0")
