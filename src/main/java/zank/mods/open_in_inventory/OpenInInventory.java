@@ -13,10 +13,7 @@ import org.apache.logging.log4j.Logger;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.api.ScreenClosedEvent;
-import zank.mods.open_in_inventory.impl.compat.ProvideAE2OpenAction;
-import zank.mods.open_in_inventory.impl.compat.ProvideMiscOpenAction;
-import zank.mods.open_in_inventory.impl.compat.ProvidePatchouliBookOpenAction;
-import zank.mods.open_in_inventory.impl.compat.ReadOpenActionFromConfig;
+import zank.mods.open_in_inventory.impl.compat.*;
 import zank.mods.open_in_inventory.impl.crt.ProvideCraftTweakerOpenAction;
 import zank.mods.open_in_inventory.impl.handler.ClientEventHandler;
 import zank.mods.open_in_inventory.impl.handler.ActionHandler;
@@ -65,6 +62,9 @@ public abstract class OpenInInventory {
         }
         if (Platform.isModLoaded("crafttweaker")) {
             plugins.add(new ProvideCraftTweakerOpenAction());
+        }
+        if (Platform.isModLoaded("refinedstorage")) {
+            plugins.add(new ProvideRefinedStorageOpenAction());
         }
     }
 
