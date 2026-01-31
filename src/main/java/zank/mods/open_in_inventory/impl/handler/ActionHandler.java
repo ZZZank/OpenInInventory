@@ -227,7 +227,6 @@ public class ActionHandler {
                 // container
                 && screen instanceof HandledScreen<?> handled
                 && handled.getScreenHandler().getCursorStack().isEmpty()
-                && handled.getScreenHandler().canInsertIntoSlot(focused)
             ) {
                 return OpenInInventory.ACTION_REGISTRY.get(stack);
             }
