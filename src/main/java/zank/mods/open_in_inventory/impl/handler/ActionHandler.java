@@ -135,7 +135,7 @@ public class ActionHandler {
         client.interactionManager.clickSlot(
             screen.getScreenHandler().syncId,
             swapFrom,
-            swapTo,
+            this.swapTo,
             SlotActionType.SWAP,
             player
         );
@@ -148,6 +148,7 @@ public class ActionHandler {
         if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
             var action = this.action;
             if (action != null && action.match(player.getMainHandStack())) {
+                assert client.interactionManager != null;
                 client.interactionManager.interactItem(player, Hand.MAIN_HAND);
 
                 if (shouldUpdateSneak) {
