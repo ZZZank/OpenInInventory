@@ -5,7 +5,7 @@ package zank.mods.open_in_inventory.neoforge;
 import net.neoforged.fml.common.Mod;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
-import zank.mods.open_in_inventory.neoforge.kubejs.ProvideKubeJSAction;
+import zank.mods.open_in_inventory.neoforge.kubejs.KubeJSOpenInInventoryPlugin;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public class OpenInInventoryNeoForge extends OpenInInventory {
     @Override
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
         super.registerPlugin(plugins);
-        plugins.add(new ProvideKubeJSAction());
+        plugins.add(new KubeJSOpenInInventoryPlugin());
     }
 }

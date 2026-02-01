@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
-import zank.mods.open_in_inventory.forge.kubejs.ProvideKubeJSAction;
+import zank.mods.open_in_inventory.forge.kubejs.KubeJSOpenInInventoryPlugin;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class OpenInInventoryForge extends OpenInInventory {
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
         super.registerPlugin(plugins);
         if (Platform.isModLoaded("kubejs")) {
-            plugins.add(new ProvideKubeJSAction());
+            plugins.add(new KubeJSOpenInInventoryPlugin());
         }
     }
 }
