@@ -1,15 +1,13 @@
 package zank.mods.open_in_inventory.util;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * @author ZZZank
@@ -56,7 +54,14 @@ public class SimpleConfig {
             got = fallback;
         }
         if (comment != null) {
-            toWrite.addProperty("//" + key, comment);
+            var lines = comment.split("\n");
+            if (lines.length > 1) {
+                var comments = new JsonArray();
+                Arrays.asList(lines).forEach(comments::add);
+                toWrite.add("//" + key, comments);
+            } else {
+                toWrite.addProperty("//" + key, comment);
+            }
         }
         toWrite.add(key, got);
         return got;
