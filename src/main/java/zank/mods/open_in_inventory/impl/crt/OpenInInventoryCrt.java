@@ -4,10 +4,7 @@ import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import org.openzen.zencode.java.ZenCodeType;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -16,17 +13,34 @@ import java.util.function.Consumer;
 @ZenCodeType.Name("mods.open_in_inventory.OpenInInventory")
 @ZenRegister
 public abstract class OpenInInventoryCrt {
-    static final List<Consumer<OpenActionRegistry>> PROVIDERS = new ArrayList<>();
+    @ZenCodeType.Field
+    public static final LessGenericHandlerRegistry<OpenActionRegistry> ACTION_PROVIDERS
+        = new LessGenericHandlerRegistry<>();
 
-    public static void registerActionProvider(Consumer<OpenActionRegistry> provider) {
-        PROVIDERS.add(Objects.requireNonNull(provider));
-    }
+    @ZenCodeType.Field
+    public static final LessGenericHandlerRegistry<Map<String, Collection<String>>> REPLACE_TEMPLATE_PROVIDERS
+        = new LessGenericHandlerRegistry<>();
 
-    public static void clearActionProviders() {
-        PROVIDERS.clear();
-    }
+    /// Basically replacing `someMethod(T), T = Consumer<XXX>` with `someMethod(Consumer<T>), T = XXX`
+    ///
+    /// This is due to ZenCode missing generic handling
+    @ZenCodeType.Name("mods.open_in_inventory.util.HandlerRegistry")
+    public static class LessGenericHandlerRegistry<T> {
+        private final List<Consumer<T>> handlers = new ArrayList<>();
 
-    public static List<Consumer<OpenActionRegistry>> viewRegisteredProviders() {
-        return Collections.unmodifiableList(PROVIDERS);
+        @ZenCodeType.Method
+        public void register(Consumer<T> handler) {
+            this.handlers.add(Objects.requireNonNull(handler));
+        }
+
+        @ZenCodeType.Method
+        public void clear() {
+            this.handlers.clear();
+        }
+
+        @ZenCodeType.Method
+        public List<Consumer<T>> view() {
+            return Collections.unmodifiableList(this.handlers);
+        }
     }
 }
