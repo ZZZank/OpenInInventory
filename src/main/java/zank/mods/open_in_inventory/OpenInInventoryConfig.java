@@ -35,7 +35,7 @@ public abstract class OpenInInventoryConfig {
         );
         SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
             getEntry(cfg, "screen_blacklist", new JsonArray()),
-            new TypeToken<Set<String>>() {}.getType()
+            TypeToken.getParameterized(Set.class, String.class).getType()
         );
         REQUIRE_EMPTY_MAIN_HAND = getEntry(cfg, "require_empty_main_hand", true);
         REQUIRE_SINGLE_STACK = getEntry(cfg, "require_single_stack", true);
