@@ -20,6 +20,9 @@ import java.util.Map;
  */
 public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
     private static final Map<String, List<String>> TEMPLATES = Map.of(
+        /// @see net.minecraft.item.ArmorItem.Type
+        /// Due to 1.19 having no `ArmorItem$Type`, we have to provide this manually
+        "armor", List.of("helmet", "chestplate", "leggings", "boots"),
         "color", Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList()
     );
 
