@@ -52,8 +52,8 @@ public abstract class OpenInInventory {
     }
 
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
+        plugins.add(new CommonOpenInInventoryPlugin());
         plugins.add(new ReadOpenActionFromConfig());
-        plugins.add(new ProvideMiscOpenAction());
         if (Platform.isModLoaded("ae2")) {
             plugins.add(new ProvideAE2OpenAction());
         }
@@ -89,7 +89,15 @@ public abstract class OpenInInventory {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }
 
-        ((OpenActionRegistryImpl) OpenInInventory.ACTION_REGISTRY).internal.clear();
+        var registry = (OpenActionRegistryImpl) OpenInInventory.ACTION_REGISTRY;
+
+        // register template before using them (parse config)
+        registry.replaceTemplates.clear();
+        for (var plugin : OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS) {
+            plugin.registerReplaceTemplate(registry.replaceTemplates);
+        }
+
+        registry.internal.clear();
         for (var plugin : OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS) {
             plugin.registerAction(OpenInInventory.ACTION_REGISTRY);
         }

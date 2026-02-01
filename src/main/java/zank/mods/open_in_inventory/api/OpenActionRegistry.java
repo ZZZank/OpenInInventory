@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,4 +41,6 @@ public interface OpenActionRegistry {
     default Optional<OpenAction> registerIfPresent(Identifier itemId) {
         return registerIfPresent(itemId, false);
     }
+
+    Collection<String> getReplaceTemplate(String key);
 }

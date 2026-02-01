@@ -2,7 +2,6 @@ package zank.mods.open_in_inventory.impl.compat;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import net.minecraft.util.DyeColor;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.api.OpenAction;
@@ -10,27 +9,18 @@ import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.impl.OpenActionImpl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author ZZZank
  */
 public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
-    private static final Map<String, List<String>> TEMPLATES = Map.of(
-        /// @see net.minecraft.item.ArmorItem.Type
-        /// Due to 1.19 having no `ArmorItem$Type`, we have to provide this manually
-        "armor", List.of("helmet", "chestplate", "leggings", "boots"),
-        "color", Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList()
-    );
 
     @Override
     public void registerAction(OpenActionRegistry registry) {
         for (var jsonElement : OpenInInventoryConfig.ENABLED_ITEMS) {
             try {
-                var parsed = parseAction(jsonElement);
+                var parsed = parseAction(registry, jsonElement);
                 for (var action : parsed) {
                     registry.register(action.stack(), action.sneak());
                 }
@@ -40,16 +30,16 @@ public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
         }
     }
 
-    private static List<OpenAction> parseAction(JsonElement json) {
+    private static List<OpenAction> parseAction(OpenActionRegistry registry, JsonElement json) {
         var parsed = new ArrayList<OpenAction>();
 
         if (json.isJsonPrimitive()) {
-            for (var replaced : replaceTemplate(json.getAsString())) {
+            for (var replaced : replaceTemplate(registry, json.getAsString())) {
                 parsed.add(OpenInInventory.GSON.fromJson(new JsonPrimitive(replaced), OpenActionImpl.class));
             }
         } else {
             var jsonObject = json.getAsJsonObject();
-            for (var replacedId : replaceTemplate(jsonObject.get("id").getAsString())) {
+            for (var replacedId : replaceTemplate(registry, jsonObject.get("id").getAsString())) {
                 jsonObject.addProperty("id", replacedId);
                 parsed.add(OpenInInventory.GSON.fromJson(jsonObject, OpenActionImpl.class));
             }
@@ -58,7 +48,7 @@ public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
         return parsed;
     }
 
-    private static List<String> replaceTemplate(String original) {
+    private static List<String> replaceTemplate(OpenActionRegistry registry, String original) {
         // example: some_mod:{color}_bag
 
         var left = original.indexOf('{');
@@ -75,14 +65,14 @@ public class ReadOpenActionFromConfig implements OpenInInventoryPlugin {
         var after = original.substring(right + 1); // _bag
         var template = original.substring(left + 1, right); // color
 
-        var replaceWith = TEMPLATES.get(template);
+        var replaceWith = registry.getReplaceTemplate(template);
         if (replaceWith == null) {
             throw new IllegalArgumentException("Unknown template: " + template);
         }
 
         var list = new ArrayList<String>();
         for (var replaced : replaceWith) {
-            list.addAll(replaceTemplate(before + replaced + after));
+            list.addAll(replaceTemplate(registry, before + replaced + after));
         }
         return list;
     }

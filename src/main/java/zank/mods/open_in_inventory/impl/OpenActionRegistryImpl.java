@@ -2,7 +2,6 @@ package zank.mods.open_in_inventory.impl;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
@@ -12,6 +11,7 @@ import java.util.*;
  * @author ZZZank
  */
 public class OpenActionRegistryImpl implements OpenActionRegistry {
+    public final Map<String, Collection<String>> replaceTemplates = new HashMap<>();
     public final Map<Item, List<OpenAction>> internal = new HashMap<>();
 
     @Override
@@ -35,5 +35,10 @@ public class OpenActionRegistryImpl implements OpenActionRegistry {
         internal.computeIfAbsent(stack.getItem(), k -> new ArrayList<>(3))
             .add(action);
         return action;
+    }
+
+    @Override
+    public Collection<String> getReplaceTemplate(String key) {
+        return replaceTemplates.get(key);
     }
 }
