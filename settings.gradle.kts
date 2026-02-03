@@ -9,10 +9,8 @@ pluginManagement {
         maven("https://maven.kikugie.dev/snapshots") {
             name = "KikuGie Snapshots"
         }
-        maven("https://maven2.bai.lol") {
-            content {
-                includeGroup("lol.bai.explosion")
-            }
+        maven("https://maven.firstdark.dev/releases") {
+            name = "ModPublisher Release"
         }
     }
 }

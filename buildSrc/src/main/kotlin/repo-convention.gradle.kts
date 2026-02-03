@@ -15,7 +15,6 @@ repositories {
     strictMaven("CurseMaven", "https://cursemaven.com", "curse.maven")
     strictMaven("Modrinth", "https://api.modrinth.com/maven", "maven.modrinth")
     strictMaven("BlameJared", "https://maven.blamejared.com", "vazkii.patchouli", "com.blamejared.crafttweaker")
-    strictMaven("Explosion Gradle Plugin", "https://maven2.bai.lol", "lol.bai.explosion")
     strictMaven("Latvian", "https://maven.latvian.dev/releases", "dev.latvian.mods", "dev.latvian.apps")
     maven { url = uri("https://maven.architectury.dev/") }
 }
