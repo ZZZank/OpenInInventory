@@ -53,7 +53,7 @@ public abstract class OpenInInventory {
 
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
         plugins.add(new CommonOpenInInventoryPlugin());
-        plugins.add(new ReadOpenActionFromConfig());
+        plugins.add(new ProvideConfigOpenAction());
         if (Platform.isModLoaded("ae2")) {
             plugins.add(new ProvideAE2OpenAction());
         }

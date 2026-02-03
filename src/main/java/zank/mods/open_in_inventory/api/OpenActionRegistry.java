@@ -5,10 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author ZZZank
@@ -43,4 +40,33 @@ public interface OpenActionRegistry {
     }
 
     Collection<String> getReplaceTemplate(String key);
+
+    default Collection<String> findAndApplyTemplate(String original) {
+        // example: some_mod:{color}_bag
+
+        var left = original.indexOf('{');
+        if (left < 0) {
+            return List.of(original);
+        }
+
+        var right = original.indexOf('}', left);
+        if (right < 0) {
+            throw new IllegalArgumentException("Found '{', but no matching '}' in string: " + original);
+        }
+
+        var before = original.substring(0, left); // some_mod:
+        var after = original.substring(right + 1); // _bag
+        var template = original.substring(left + 1, right); // color
+
+        var replaceWith = getReplaceTemplate(template);
+        if (replaceWith == null) {
+            throw new IllegalArgumentException("Unknown template: " + template);
+        }
+
+        var list = new ArrayList<String>();
+        for (var replaced : replaceWith) {
+            list.addAll(findAndApplyTemplate(before + replaced + after));
+        }
+        return list;
+    }
 }
