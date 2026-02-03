@@ -81,7 +81,7 @@ public class ClientEventHandler {
                         Supplier<Text> message = () -> Text.empty()
                             .append(Text.literal(key).setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
                             .append(" -> ")
-                            .append(replace.toString());
+                            .append(String.valueOf(replace));
                         cx.getSource().arch$sendSuccess(message/*?if <1.20 {*//*.get()*//*?}*/, false);
                         return Command.SINGLE_SUCCESS;
                     })
