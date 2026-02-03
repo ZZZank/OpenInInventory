@@ -2,10 +2,11 @@
   "open_in_inventory.tooltip.": "",
   "open_in_inventory.tooltip.use": "右键点击打开",
   "open_in_inventory.config.": "",
-  "open_in_inventory.config.enabled_items": "格式: 字符串，或 { id: 字符串, count?: 整数, components?: ComponentMap, sneak?: 布尔值 }，? 表示可选参数",
+  "open_in_inventory.config.refresh": "在游戏内可使用指令 `/open-in-inventory refresh` 刷新配置",
+  "open_in_inventory.config.enabled_items": "格式：物品ID，或 { id: 物品ID, count?: 整数, components?: ComponentMap, sneak?: 布尔值 }，? 表示可选\n物品ID为字符串，例如 `example_mod:bag`。可使用模板一次性支持多个物品，例如 `example:{color}_bag`\n使用 `/open-in-inventory replaceTemplate ...` 命令查看有效模板",
   "open_in_inventory.config.debug": "启用调试日志",
   "open_in_inventory.config.open_delay": "将物品切换至主手后，使用该物品前的延迟（单位：游戏刻）",
-  "open_in_inventory.config.require_single_stack": "禁止对物品数量超过1的物品堆叠应用背包内打开功能",
+  "open_in_inventory.config.require_single_stack": "对物品数量超过1的物品堆禁用背包内打开功能",
   "open_in_inventory.config.require_empty_main_hand": "当玩家主手持握物品时禁用背包内打开功能",
   "open_in_inventory.config.screen_blacklist": "屏幕类名称列表，当前屏幕在列表中时，本模组会被禁用"
 }
