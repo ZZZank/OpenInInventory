@@ -1,5 +1,5 @@
 package zank.mods.open_in_inventory.fabric.kubejs;
-
+//? if <1.21 {
 import dev.latvian.mods.kubejs.event.EventJS;
 
 import java.util.Collection;
@@ -19,3 +19,4 @@ public class RegisterReplaceTemplateEventJS extends EventJS {
         registry.put(key, replaceWith);
     }
 }
+//? }
