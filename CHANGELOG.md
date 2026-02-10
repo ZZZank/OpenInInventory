@@ -1,3 +1,9 @@
+# Open In Inventory 1.1.0 -> 1.1.1
+
+- Add builtin support for Crafting On A Stick
+
+---
+
 # Open In Inventory 1.0.0 -> 1.1.0
 
 - Fix redundant Java 21 requirement on Minecraft versions that doesn't actually require Java 21
