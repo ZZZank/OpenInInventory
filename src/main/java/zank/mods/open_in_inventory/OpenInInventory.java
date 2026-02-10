@@ -66,6 +66,9 @@ public abstract class OpenInInventory {
         if (Platform.isModLoaded("refinedstorage")) {
             plugins.add(new ProvideRefinedStorageOpenAction());
         }
+        if (Platform.isModLoaded("crafting_on_a_stick")) {
+            plugins.add(new CraftingOnAStickCompat());
+        }
     }
 
     public static boolean isScreenBlackListed(Screen screen) {
