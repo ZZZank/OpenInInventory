@@ -17,8 +17,13 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
 
     @Override
     public void registerAction(OpenActionRegistry registry) {
-        registry.registerIfPresent(Identifier.tryParse("scannable:scanner"), true);
-        registry.registerIfPresent(Identifier.tryParse("extendedcrafting:handheld_table"));
+        var helper = new ModSupportHelper(registry);
+        if (helper.check("scannable")) {
+            helper.tryRegister("scanner", true);
+        }
+        if (helper.check("extendedcrafting")) {
+            helper.tryRegister("handheld_table");
+        }
     }
 
     @Override
