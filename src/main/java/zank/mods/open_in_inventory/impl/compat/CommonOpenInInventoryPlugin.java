@@ -1,7 +1,6 @@
 package zank.mods.open_in_inventory.impl.compat;
 
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 
@@ -23,6 +22,43 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
         }
         if (helper.check("extendedcrafting")) {
             helper.tryRegister("handheld_table");
+        }
+        if (helper.check("crafting_on_a_stick")) {
+            var items = Arrays.asList(
+                "crafting_table",
+                "loom",
+                "grindstone",
+                "cartography_table",
+                "stonecutter",
+                "smithing_table",
+                "anvil",
+                "chipped_anvil",
+                "damaged_anvil"
+            );
+            for (var item : items) {
+                helper.tryRegister(item);
+            }
+        }
+        if (helper.check("refinedstorage")) {
+            var items = Arrays.asList(
+                "portable_grid", // RS & RS2
+                "creative_portable_grid", // RS & RS2
+
+                "wireless_grid", // RS & RS2
+                "creative_wireless_grid", // RS & RS2
+
+                "wireless_fluid_grid", // RS
+                "creative_wireless_fluid_grid", // RS
+
+                "wireless_autocrafting_monitor", // RS2
+                "creative_wireless_autocrafting_monitor", // RS2
+
+                "wireless_crafting_monitor", // RS
+                "creative_wireless_crafting_monitor" // RS
+            );
+            for (var item : items) {
+                helper.tryRegister(item);
+            }
         }
     }
 
