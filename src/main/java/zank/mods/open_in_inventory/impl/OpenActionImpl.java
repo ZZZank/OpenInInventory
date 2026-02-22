@@ -15,7 +15,7 @@ import java.lang.reflect.Type;
 @JsonAdapter(OpenActionImpl.GsonAdapter.class)
 public record OpenActionImpl(ItemStack stack, boolean sneak) implements OpenAction {
     private static final boolean SNEAK_DEFAULT = false;
-    private static final int COUNT_DEFAULT = 1;
+    private static final Integer COUNT_DEFAULT = (Integer) 1;
 
     public static class GsonAdapter implements JsonDeserializer<OpenActionImpl> {
         private static final String COUNT_KEY = /*? if <1.21 { */"Count"/*? } else {*//*"count"*//*?}*/;
