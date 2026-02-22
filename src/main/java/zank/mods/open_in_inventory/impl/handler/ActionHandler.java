@@ -19,6 +19,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.OpenInInventoryConfig;
@@ -57,25 +58,18 @@ public class ActionHandler {
     public EventResult beforeMouseClicked(
         MinecraftClient client,
         Screen _screen,
-        @SuppressWarnings("unused")
         double mouseX,
-        @SuppressWarnings("unused")
         double mouseY,
         int button
     ) {
-        // Right-click without Shift
-        if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT || OpenInInventory.isShiftPressed(client)) {
+        if (button != GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             return EventResult.pass();
         }
         var player = client.player;
         var world = client.world;
         if (player != null && world != null && _screen instanceof HandledScreen<?> screen) {
             var focused = ((AccessHandledScreen) screen).getFocusedSlot();
-            if (focused == null) {
-                return EventResult.pass();
-            }
-
-            var matched = matchAction(_screen, player, focused.getStack());
+            var matched = matchAction(_screen, player, focused);
             if (matched == null) {
                 return EventResult.pass();
             }
@@ -200,37 +194,34 @@ public class ActionHandler {
         }
     }
 
-    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext ignored/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
+    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext cx/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
         var client = MinecraftClient.getInstance();
-        var matched = matchAction(client.currentScreen, client.player, stack);
-        if (matched != null) {
-            lines.add(Text.translatable("open_in_inventory.tooltip.use"));
+        if (client.currentScreen instanceof AccessHandledScreen access) {
+            var matched = matchAction(client.currentScreen, client.player, access.getFocusedSlot());
+            if (matched != null) {
+                lines.add(Text.translatable("open_in_inventory.tooltip.use"));
+            }
         }
     }
 
-    private OpenAction matchAction(Screen screen, PlayerEntity player, ItemStack stack) {
+    private OpenAction matchAction(@Nullable Screen screen, @Nullable PlayerEntity player, @Nullable Slot focused) {
         if (
             // basic
             stage == ActionStage.IDLE
             && screen != null
             && player != null
+            && focused != null
+            && !OpenInInventory.isShiftPressed(MinecraftClient.getInstance())
             // config
-            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || stack.getCount() == 1)
+            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || focused.getStack().getCount() == 1)
             && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
             && !OpenInInventory.isScreenBlackListed(screen)
-            // focused slot
-            && screen instanceof AccessHandledScreen access
+            // container
+            && focused.inventory == player.getInventory()
+            && screen instanceof HandledScreen<?> handled
+            && handled.getScreenHandler().getCursorStack().isEmpty()
         ) {
-            var focused = access.getFocusedSlot();
-            if (
-                focused != null
-                && focused.inventory == player.getInventory()
-                // container
-                && screen instanceof HandledScreen<?> handled
-                && handled.getScreenHandler().getCursorStack().isEmpty()
-            ) {
-                return OpenInInventory.ACTION_REGISTRY.get(stack);
-            }
+            return OpenInInventory.ACTION_REGISTRY.get(focused.getStack());
         }
         return null;
     }
