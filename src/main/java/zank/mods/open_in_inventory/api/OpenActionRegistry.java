@@ -58,7 +58,13 @@ public interface OpenActionRegistry {
         var after = original.substring(right + 1); // _bag
         var template = original.substring(left + 1, right); // color
 
-        var replaceWith = getReplaceTemplate(template);
+        // template key {color}, or immediate template {iron|gold|diamond}
+        Collection<String> replaceWith;
+        if (template.indexOf('|') >= 0) {
+            replaceWith = Arrays.asList(template.split("\\|"));
+        } else {
+            replaceWith = getReplaceTemplate(template);
+        }
         if (replaceWith == null) {
             throw new IllegalArgumentException("Unknown template: " + template);
         }
