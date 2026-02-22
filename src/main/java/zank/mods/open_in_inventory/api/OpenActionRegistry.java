@@ -18,6 +18,8 @@ public interface OpenActionRegistry {
 
     OpenAction register(ItemStack stack, boolean sneak);
 
+    /// Equivalent of `register(..., false)`
+    /// @see #register(ItemStack, boolean)
     default OpenAction register(ItemStack stack) {
         return register(stack, false);
     }
@@ -26,8 +28,10 @@ public interface OpenActionRegistry {
         return register(item.getDefaultStack(), sneak);
     }
 
-    default OpenAction register(Item stack) {
-        return register(stack, false);
+    /// Equivalent of `register(..., false)`
+    /// @see #register(Item, boolean)
+    default OpenAction register(Item item) {
+        return register(item, false);
     }
 
     default Optional<OpenAction> registerIfPresent(Identifier itemId, boolean sneak) {
@@ -35,12 +39,22 @@ public interface OpenActionRegistry {
         return item == null ? Optional.empty() : Optional.of(register(item, sneak));
     }
 
+    /// Equivalent of `registerIfPresent(..., false)`
+    /// @see #registerIfPresent(Identifier, boolean)
     default Optional<OpenAction> registerIfPresent(Identifier itemId) {
         return registerIfPresent(itemId, false);
     }
 
+    /// search for registered template with such key, return `null` if not found
+    ///
+    /// immediate template is not supported, use [#findAndApplyTemplate(java.lang.String)] instead
     Collection<String> getReplaceTemplate(String key);
 
+    /// Supports:
+    /// - registered template: {color}
+    /// - immediate template: {iron|gold|diamond}
+    ///
+    /// @see OpenInInventoryPlugin#registerReplaceTemplate(java.util.Map)
     default Collection<String> findAndApplyTemplate(String original) {
         // example: some_mod:{color}_bag
 
