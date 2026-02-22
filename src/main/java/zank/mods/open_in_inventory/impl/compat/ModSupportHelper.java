@@ -6,7 +6,8 @@ import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author ZZZank
@@ -28,15 +29,25 @@ public final class ModSupportHelper {
         return Identifier.of(mod, path);
     }
 
-    public Optional<OpenAction> tryRegister(String path, boolean sneak) {
-        var result = registry.registerIfPresent(id(path), sneak);
-        if (result.isEmpty()) {
-            OpenInInventory.LOGGER.error("Cannot find item ith id: {}", id(path));
+    /// find and apply all possible templates in `path`, and try to register all of them. Failed registration will cause
+    /// an error logging
+    ///
+    /// @return Successfully registered [OpenAction]
+    public Collection<OpenAction> tryRegister(String path, boolean sneak) {
+        var registered = new ArrayList<OpenAction>();
+        for (var applied : registry.findAndApplyTemplate(path)) {
+            var result = registry.registerIfPresent(id(applied), sneak);
+            if (result.isEmpty()) {
+                OpenInInventory.LOGGER.error("Cannot find item ith id: {}", id(path));
+            } else {
+                registered.add(result.get());
+            }
         }
-        return result;
+        return registered;
     }
 
-    public Optional<OpenAction> tryRegister(String path) {
+    /// @see #tryRegister(String, boolean)
+    public Collection<OpenAction> tryRegister(String path) {
         return tryRegister(path, false);
     }
 }
