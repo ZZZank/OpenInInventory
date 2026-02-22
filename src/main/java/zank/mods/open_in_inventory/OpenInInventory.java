@@ -93,10 +93,16 @@ public abstract class OpenInInventory {
         for (var plugin : OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS) {
             plugin.registerReplaceTemplate(registry.replaceTemplates);
         }
+        for (var entry : registry.replaceTemplates.entrySet()) {
+            entry.setValue(List.copyOf(entry.getValue())); // trim
+        }
 
         registry.internal.clear();
         for (var plugin : OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS) {
             plugin.registerAction(OpenInInventory.ACTION_REGISTRY);
+        }
+        for (var entry : registry.internal.entrySet()) {
+            entry.setValue(List.copyOf(entry.getValue())); // trim
         }
     }
 }
