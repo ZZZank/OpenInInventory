@@ -1,5 +1,6 @@
 package zank.mods.open_in_inventory.impl.compat;
 
+import net.minecraft.registry.Registries;
 import net.minecraft.util.DyeColor;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
@@ -60,6 +61,24 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
                 helper.tryRegister(item);
             }
         }
+        if (helper.check("ae2")) {
+            helper.tryRegister("wireless_terminal");
+            helper.tryRegister("wireless_crafting_terminal");
+
+            helper.tryRegister("certus_quartz_cutting_knife", true);
+            helper.tryRegister("nether_quartz_cutting_knife", true);
+
+            helper.tryRegister("portable_item_cell_{ae2_capacity}");
+            helper.tryRegister("portable_fluid_cell_{ae2_capacity}");
+        }
+        if (helper.check("patchouli")) {
+            if (Registries.ITEM.containsId(helper.id("guide_book"))) {
+                var baseItem = Registries.ITEM.get(helper.id("guide_book"));
+                Registries.ITEM.stream()
+                    .filter(baseItem.getClass()::isInstance)
+                    .forEach(registry::register);
+            }
+        }
     }
 
     @Override
@@ -69,5 +88,7 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
         registry.put("armor", List.of("helmet", "chestplate", "leggings", "boots"));
 
         registry.put("color", Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList());
+
+        registry.put("ae2:capacity", List.of("1k", "4k", "16k", "64k", "256k"));
     }
 }

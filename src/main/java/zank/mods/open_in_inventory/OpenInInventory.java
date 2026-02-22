@@ -53,12 +53,6 @@ public abstract class OpenInInventory {
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
         plugins.add(new CommonOpenInInventoryPlugin());
         plugins.add(new ProvideConfigOpenAction());
-        if (Platform.isModLoaded("ae2")) {
-            plugins.add(new ProvideAE2OpenAction());
-        }
-        if (Platform.isModLoaded("patchouli")) {
-            plugins.add(new ProvidePatchouliBookOpenAction());
-        }
         if (Platform.isModLoaded("crafttweaker")) {
             plugins.add(new ProvideCraftTweakerOpenAction());
         }
