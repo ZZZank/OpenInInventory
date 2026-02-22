@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -15,7 +14,6 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import zank.mods.open_in_inventory.OpenInInventory;
-import zank.mods.open_in_inventory.api.ScreenClosedEvent;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.util.function.Supplier;
@@ -29,16 +27,6 @@ public class ClientEventHandler {
 
     public static void clientStarted(ClientWorld world) {
         OpenInInventory.refreshConfig();
-    }
-
-    private static boolean lastScreenPresent;
-
-    public static void tick(MinecraftClient client) {
-        var currentPresent = client.currentScreen != null;
-        if (!currentPresent && lastScreenPresent) {
-            ScreenClosedEvent.EVENT.invoker().run();
-        }
-        lastScreenPresent = currentPresent;
     }
 
     public static void clientCommand(

@@ -5,11 +5,10 @@ import dev.architectury.event.EventFactory;
 
 import java.util.Objects;
 
-/**
- * @author ZZZank
- */
+/// After [net.minecraft.client.MinecraftClient#currentScreen] became `null`
+///
+/// @author ZZZank
 public interface ScreenClosedEvent {
-    // or EventFactory.createLoop()
     Event<Runnable> EVENT = EventFactory.of(list -> {
         var array = Objects.requireNonNull(list.toArray(new Runnable[0]));
         return () -> {
