@@ -68,8 +68,8 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
             helper.tryRegister("certus_quartz_cutting_knife", true);
             helper.tryRegister("nether_quartz_cutting_knife", true);
 
-            helper.tryRegister("portable_item_cell_{ae2_capacity}");
-            helper.tryRegister("portable_fluid_cell_{ae2_capacity}");
+            helper.tryRegister("portable_item_cell_{ae2:capacity}");
+            helper.tryRegister("portable_fluid_cell_{ae2:capacity}");
         }
         if (helper.check("patchouli")) {
             if (Registries.ITEM.containsId(helper.id("guide_book"))) {
