@@ -78,9 +78,9 @@ public interface OpenActionRegistry {
             replaceWith = Arrays.asList(template.split("\\|"));
         } else {
             replaceWith = getReplaceTemplate(template);
-        }
-        if (replaceWith == null) {
-            throw new IllegalArgumentException("Unknown template: " + template);
+            if (replaceWith == null) {
+                throw new IllegalArgumentException("Unknown template: " + template);
+            }
         }
 
         var list = new ArrayList<String>();
