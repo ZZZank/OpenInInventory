@@ -1,3 +1,7 @@
+# Open In Inventory 1.2.0 -> 1.2.1
+
+- Fix used template in builtin ae2 compat
+
 # Open In Inventory 1.1.1 -> 1.2.0
 
 - Fix tooltip not disabled when sneak
