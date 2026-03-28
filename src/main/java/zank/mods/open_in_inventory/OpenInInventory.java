@@ -15,6 +15,7 @@ import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.api.ScreenClosedEvent;
 import zank.mods.open_in_inventory.impl.compat.*;
 import zank.mods.open_in_inventory.impl.crt.ProvideCraftTweakerOpenAction;
+import zank.mods.open_in_inventory.impl.handler.ClientCommandHandler;
 import zank.mods.open_in_inventory.impl.handler.ClientEventHandler;
 import zank.mods.open_in_inventory.impl.handler.ActionHandler;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
@@ -46,7 +47,7 @@ public abstract class OpenInInventory {
             ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
             ScreenClosedEvent.EVENT.register(actionHandler::screenClosed);
             ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
-            ClientCommandRegistrationEvent.EVENT.register(ClientEventHandler::clientCommand);
+            ClientCommandRegistrationEvent.EVENT.register(ClientCommandHandler::clientCommand);
         }
     }
 
