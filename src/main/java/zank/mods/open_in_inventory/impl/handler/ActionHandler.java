@@ -22,7 +22,6 @@ import net.minecraft.util.Hand;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import zank.mods.open_in_inventory.OpenInInventory;
-import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
 
@@ -79,7 +78,7 @@ public class ActionHandler {
 
             var stackBeforeSwap = focused.getStack();
 
-            if (OpenInInventoryConfig.DEBUG) {
+            if (OpenInInventory.CONFIG.debug()) {
                 OpenInInventory.LOGGER.info(
                     "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
                     focused.getIndex(),
@@ -115,7 +114,7 @@ public class ActionHandler {
                 }
             }
 
-            itemUseAtTime = world.getTime() + OpenInInventoryConfig.OPEN_DELAY;
+            itemUseAtTime = world.getTime() + OpenInInventory.CONFIG.openDelay();
             stage = ActionStage.SWAPPED;
             action = matched;
 
@@ -152,11 +151,11 @@ public class ActionHandler {
                         client.options.sneakKey.setPressed(!action.sneak());
                     }
                 }
-                if (OpenInInventoryConfig.DEBUG) {
+                if (OpenInInventory.CONFIG.debug()) {
                     OpenInInventory.LOGGER.info("SWAPPED -> USED, action match: {}", action);
                 }
             } else {
-                if (OpenInInventoryConfig.DEBUG) {
+                if (OpenInInventory.CONFIG.debug()) {
                     OpenInInventory.LOGGER.info("SWAPPED -> USED, skipped using");
                 }
             }
@@ -168,11 +167,11 @@ public class ActionHandler {
             } else if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
                 // place items back if player open inventory
                 performSwap(client, inv, swapFrom, player);
-                if (OpenInInventoryConfig.DEBUG) {
+                if (OpenInInventory.CONFIG.debug()) {
                     OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
                 }
             } else {
-                if (OpenInInventoryConfig.DEBUG) {
+                if (OpenInInventory.CONFIG.debug()) {
                     OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, swap skipped");
                 }
             }
@@ -186,7 +185,7 @@ public class ActionHandler {
             var client = MinecraftClient.getInstance();
             var player = client.player;
             if (player != null) {
-                if (OpenInInventoryConfig.DEBUG) {
+                if (OpenInInventory.CONFIG.debug()) {
                     OpenInInventory.LOGGER.info("USED -> SWAP_BACK_SCREEN");
                 }
                 client.setScreen(new InventoryScreen(player));
@@ -213,8 +212,8 @@ public class ActionHandler {
             && focused != null
             && !OpenInInventory.isShiftPressed(MinecraftClient.getInstance())
             // config
-            && (!OpenInInventoryConfig.REQUIRE_SINGLE_STACK || focused.getStack().getCount() == 1)
-            && (!OpenInInventoryConfig.REQUIRE_EMPTY_MAIN_HAND || player.getMainHandStack().isEmpty())
+            && (!OpenInInventory.CONFIG.requireSingleStack() || focused.getStack().getCount() == 1)
+            && (!OpenInInventory.CONFIG.requireEmptyMainHand() || player.getMainHandStack().isEmpty())
             && !OpenInInventory.isScreenBlackListed(screen)
             // container
             && focused.inventory == player.getInventory()

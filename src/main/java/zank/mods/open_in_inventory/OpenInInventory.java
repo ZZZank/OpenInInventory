@@ -21,6 +21,7 @@ import zank.mods.open_in_inventory.impl.handler.ActionHandler;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -35,6 +36,7 @@ public abstract class OpenInInventory {
         .create();
 
     public static OpenInInventory COMMON;
+    public static OpenInInventoryConfig CONFIG;
     public static final OpenActionRegistry ACTION_REGISTRY = new OpenActionRegistryImpl();
     public final ActionHandler actionHandler = new ActionHandler();
 
@@ -63,7 +65,7 @@ public abstract class OpenInInventory {
         if (screen == null) {
             return true; // I mean, yeah
         }
-        var blacklist = OpenInInventoryConfig.SCREEN_BLACKLIST;
+        var blacklist = OpenInInventory.CONFIG.screenBlacklist();
         return !blacklist.isEmpty() && blacklist.contains(screen.getClass().getName());
     }
 
@@ -74,8 +76,10 @@ public abstract class OpenInInventory {
     }
 
     public static void refreshConfig() {
-        try {
-            OpenInInventoryConfig.refresh(Platform.getConfigFolder().resolve(OpenInInventory.ID + ".json"));
+        var path = Platform.getConfigFolder().resolve(OpenInInventory.ID + ".json");
+        try (var reader = Files.newBufferedReader(path)) {
+            CONFIG = OpenInInventory.GSON.fromJson(reader, OpenInInventoryConfig.class);
+            OpenInInventory.CONFIG.write(path);
         } catch (IOException e) {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }

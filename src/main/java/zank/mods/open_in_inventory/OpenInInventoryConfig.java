@@ -1,72 +1,53 @@
 package zank.mods.open_in_inventory;
 
-import com.demonwav.mcdev.annotations.Translatable;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
+import com.google.gson.JsonObject;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Text;
-import zank.mods.open_in_inventory.util.SimpleConfig;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
  * @author ZZZank
  */
-public abstract class OpenInInventoryConfig {
-    public static Set<String> SCREEN_BLACKLIST;
-    public static boolean REQUIRE_EMPTY_MAIN_HAND;
-    public static boolean REQUIRE_SINGLE_STACK;
-    public static int OPEN_DELAY;
-    public static boolean DEBUG;
-    public static JsonArray ENABLED_ITEMS;
-
-    public static void refresh(Path configFile) throws IOException {
-        var cfg = new SimpleConfig();
-
-        cfg.read(OpenInInventory.GSON, configFile);
-
-        cfg.addElementToWrite(
-            "//",
-            new JsonPrimitive(Text.translatable("open_in_inventory.config.refresh").getString())
+public record OpenInInventoryConfig(
+    Set<String> screenBlacklist,
+    boolean requireEmptyMainHand,
+    boolean requireSingleStack,
+    int openDelay,
+    boolean debug,
+    JsonArray enabledItems
+) {
+    public OpenInInventoryConfig() {
+        this(
+            new HashSet<>(),
+            true,
+            true,
+            3,
+            false,
+            new JsonArray()
         );
-        SCREEN_BLACKLIST = OpenInInventory.GSON.fromJson(
-            getEntry(cfg, "screen_blacklist", new JsonArray()),
-            TypeToken.getParameterized(Set.class, String.class).getType()
-        );
-        REQUIRE_EMPTY_MAIN_HAND = getEntry(cfg, "require_empty_main_hand", true);
-        REQUIRE_SINGLE_STACK = getEntry(cfg, "require_single_stack", true);
-        OPEN_DELAY = getEntry(cfg, "open_delay", 3);
-        DEBUG = getEntry(cfg, "debug", false);
-        ENABLED_ITEMS = getEntry(cfg, "enabled_items", new JsonArray()).getAsJsonArray();
-
-        cfg.write(OpenInInventory.GSON, configFile);
     }
 
-    private static JsonElement getEntry(
-        SimpleConfig cfg,
-        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
-        JsonElement fallback
-    ) {
-        return cfg.getJson(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
-    }
+    public void write(Path configFile) throws IOException {
+        var json = (JsonObject) OpenInInventory.GSON.toJsonTree(this);
 
-    private static int getEntry(
-        SimpleConfig cfg,
-        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
-        int fallback
-    ) {
-        return cfg.getInt(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
-    }
+        for (var recordComponent : OpenInInventoryConfig.class.getRecordComponents()) {
+            var name = recordComponent.getName();
 
-    private static boolean getEntry(
-        SimpleConfig cfg,
-        @Translatable(prefix = OpenInInventory.ID + ".config.") String key,
-        boolean fallback
-    ) {
-        return cfg.getBool(key, fallback, I18n.translate(OpenInInventory.ID + ".config." + key));
+            var commentStr = I18n.translate(OpenInInventory.ID + ".config." + name);
+            if (commentStr.indexOf('\n') < 0) {
+                json.addProperty("//" + name, commentStr);
+            } else {
+                json.add("//" + name, OpenInInventory.GSON.toJsonTree(commentStr.split("\n")));
+            }
+        }
+
+        try (var writer = Files.newBufferedWriter(configFile)) {
+            OpenInInventory.GSON.toJson(json, writer);
+        }
     }
 }

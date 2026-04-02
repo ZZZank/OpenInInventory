@@ -4,10 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import zank.mods.open_in_inventory.OpenInInventory;
-import zank.mods.open_in_inventory.OpenInInventoryConfig;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
-import zank.mods.open_in_inventory.impl.OpenActionImpl;
+import zank.mods.open_in_inventory.impl.DefaultOpenAction;
 
 import java.util.*;
 
@@ -18,10 +17,10 @@ public class ProvideConfigOpenAction implements OpenInInventoryPlugin {
 
     @Override
     public void registerAction(OpenActionRegistry registry) {
-        for (var jsonElement : OpenInInventoryConfig.ENABLED_ITEMS) {
+        for (var jsonElement : OpenInInventory.CONFIG.enabledItems()) {
             try {
                 for (var json : unzipTemplate(registry, normalizeToObject(jsonElement))) {
-                    var parsed = OpenInInventory.GSON.fromJson(json, OpenActionImpl.class);
+                    var parsed = OpenInInventory.GSON.fromJson(json, DefaultOpenAction.class);
                     registry.register(parsed.stack(), parsed.sneak());
                 }
             } catch (Exception e) {
