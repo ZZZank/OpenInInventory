@@ -31,10 +31,15 @@ public class OpenActionRegistryImpl implements OpenActionRegistry {
 
     @Override
     public OpenAction register(ItemStack stack, boolean sneak) {
-        var action = new OpenActionImpl(stack, sneak);
+        var action = new DefaultOpenAction(stack, sneak);
         internal.computeIfAbsent(stack.getItem(), k -> new ArrayList<>(3))
             .add(action);
         return action;
+    }
+
+    @Override
+    public OpenAction register(Item item, boolean sneak) {
+        return sneak == OpenAction.SNEAK_DEFAULT ? new WildCardOpenAction(item) : register(item.getDefaultStack(), !OpenAction.SNEAK_DEFAULT);
     }
 
     @Override

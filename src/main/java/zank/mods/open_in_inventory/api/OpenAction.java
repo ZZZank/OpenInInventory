@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
  * @author ZZZank
  */
 public interface OpenAction {
+    boolean SNEAK_DEFAULT = false;
 
     ItemStack stack();
 
