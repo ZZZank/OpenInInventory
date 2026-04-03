@@ -27,27 +27,33 @@ import static dev.architectury.event.events.client.ClientCommandRegistrationEven
 /**
  * @author ZZZank
  */
-public class ClientCommandHandler {
-    public static void clientCommand(
+public class ClientCommand {
+    public static void register(
         CommandDispatcher<ClientCommandSourceStack> dispatcher,
         CommandRegistryAccess context
     ) {
         // open-in-inventory is easier to typed
         dispatcher.register(literal(OpenInInventory.ID.replace('_', '-'))
             .then(literal("refresh")
-                .executes(ClientCommandHandler::refresh)
+                .executes(ClientCommand::refresh)
             )
             .then(literal("hand")
                 .executes(cx -> hand(cx, false))
-                .then(literal("--id").executes(cx -> hand(cx, true)))
+                .then(literal("--id")
+                    .executes(cx -> hand(cx, true)))
             )
             .then(literal("hotbar")
-                .executes(ClientCommandHandler::hotbar))
+                .executes(ClientCommand::hotbar))
             .then(literal("replaceTemplate")
                 .then(argument("key", StringArgumentType.string())
-                    .suggests(ClientCommandHandler::suggestReplaceTemplate)
-                    .executes(ClientCommandHandler::replaceTemplate)
+                    .suggests(ClientCommand::suggestReplaceTemplate)
+                    .executes(ClientCommand::replaceTemplate)
                 )
+            )
+            .then(literal("add")
+                .then(argument("args", StringArgumentType.greedyString())
+                    .suggests(CommandAdd::suggest)
+                    .executes(CommandAdd::execute))
             )
         );
     }
@@ -60,7 +66,7 @@ public class ClientCommandHandler {
     private static int refresh(CommandContext<ClientCommandSourceStack> cx) {
         OpenInInventory.refreshConfig();
         OpenInInventory.COMMON.actionHandler.reset();
-        CommandUtil.sendSuccess(cx.getSource(), () -> Text.translatable("open_in_inventory.command.refresh.done"));
+        CommandUtil.sendSuccess(cx, () -> Text.translatable("open_in_inventory.command.refresh"));
         return Command.SINGLE_SUCCESS;
     }
 

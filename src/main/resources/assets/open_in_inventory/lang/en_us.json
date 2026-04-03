@@ -10,5 +10,12 @@
   "open_in_inventory.config.require_empty_main_hand": "Disable open-in-inventory when player is holding something in main hand",
   "open_in_inventory.config.screen_blacklist": "Class name of screen in which this mod will be disabled",
   "open_in_inventory.command.": "",
-  "open_in_inventory.command.refresh.done": "Config & Action handler refreshed"
+  "open_in_inventory.command.refresh": "Config & Action handler refreshed",
+  "open_in_inventory.command.add": "Added %s item(s) to config, hover to preview",
+  "open_in_inventory.command.add.show": "Collected %s item(s): %s",
+  "open_in_inventory.command.add.option.": "Short form of: %s",
+  "open_in_inventory.command.add.option.hotbar": "Collect all valid stacks (instead of stack on main hand) in hotbar to action",
+  "open_in_inventory.command.add.option.wildcard": "ignore extra data (e.g. NBT)",
+  "open_in_inventory.command.add.option.sneak": "sneak when performing action",
+  "open_in_inventory.command.add.option.show": "show collected action without adding them to config"
 }

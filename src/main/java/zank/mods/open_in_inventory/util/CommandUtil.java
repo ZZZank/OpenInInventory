@@ -20,6 +20,10 @@ public abstract class CommandUtil {
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy")));
     }
 
+    public static Style hover(Text value) {
+        return Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, value));
+    }
+
     public static void sendSuccess(
         ClientCommandRegistrationEvent.ClientCommandSourceStack source,
         Supplier<Text> message,
@@ -43,6 +47,6 @@ public abstract class CommandUtil {
         CommandContext<ClientCommandRegistrationEvent.ClientCommandSourceStack> cx,
         Supplier<Text> message
     ) {
-        sendSuccess(cx.getSource(), message);
+        sendSuccess(cx.getSource(), message, false);
     }
 }

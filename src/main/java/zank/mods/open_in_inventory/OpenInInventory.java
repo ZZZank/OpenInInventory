@@ -15,13 +15,14 @@ import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.api.ScreenClosedEvent;
 import zank.mods.open_in_inventory.impl.compat.*;
 import zank.mods.open_in_inventory.impl.crt.ProvideCraftTweakerOpenAction;
-import zank.mods.open_in_inventory.impl.handler.ClientCommandHandler;
+import zank.mods.open_in_inventory.impl.handler.ClientCommand;
 import zank.mods.open_in_inventory.impl.handler.ClientEventHandler;
 import zank.mods.open_in_inventory.impl.handler.ActionHandler;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 /**
@@ -37,11 +38,15 @@ public abstract class OpenInInventory {
 
     public static OpenInInventory COMMON;
     public static OpenInInventoryConfig CONFIG;
+    public static Path CONFIG_PATH;
     public static final OpenActionRegistry ACTION_REGISTRY = new OpenActionRegistryImpl();
+
     public final ActionHandler actionHandler = new ActionHandler();
 
     public OpenInInventory() {
         registerPlugin(OpenInInventoryPlugin.REGISTRY_EXPOSED_CUZ_LAZINESS);
+
+        CONFIG_PATH = Platform.getConfigFolder().resolve(ID + ".json");
 
         if (Platform.getEnvironment() == Env.CLIENT) {
             ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
@@ -49,7 +54,7 @@ public abstract class OpenInInventory {
             ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
             ScreenClosedEvent.EVENT.register(actionHandler::screenClosed);
             ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
-            ClientCommandRegistrationEvent.EVENT.register(ClientCommandHandler::clientCommand);
+            ClientCommandRegistrationEvent.EVENT.register(ClientCommand::register);
         }
     }
 
@@ -76,10 +81,9 @@ public abstract class OpenInInventory {
     }
 
     public static void refreshConfig() {
-        var path = Platform.getConfigFolder().resolve(OpenInInventory.ID + ".json");
-        try (var reader = Files.newBufferedReader(path)) {
+        try (var reader = Files.newBufferedReader(CONFIG_PATH)) {
             CONFIG = OpenInInventory.GSON.fromJson(reader, OpenInInventoryConfig.class);
-            OpenInInventory.CONFIG.write(path);
+            OpenInInventory.CONFIG.write(CONFIG_PATH);
         } catch (IOException e) {
             OpenInInventory.LOGGER.error("Error when refreshing config", e);
         }
