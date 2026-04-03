@@ -1,12 +1,14 @@
 package zank.mods.open_in_inventory.impl.compat;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import zank.mods.open_in_inventory.OpenInInventory;
+import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.impl.DefaultOpenAction;
+import zank.mods.open_in_inventory.impl.WildCardOpenAction;
 
 import java.util.*;
 
@@ -17,40 +19,20 @@ public class ProvideConfigOpenAction implements OpenInInventoryPlugin {
 
     @Override
     public void registerAction(OpenActionRegistry registry) {
-        for (var jsonElement : OpenInInventory.CONFIG.enabledItems()) {
-            try {
-                for (var json : unzipTemplate(registry, normalizeToObject(jsonElement))) {
-                    var parsed = OpenInInventory.GSON.fromJson(json, DefaultOpenAction.class);
-                    registry.register(parsed.stack(), parsed.sneak());
-                }
-            } catch (Exception e) {
-                OpenInInventory.LOGGER.error("Error when parsing open action from config", e);
+        for (var json : OpenInInventory.CONFIG.enabledItems()) {
+            DataResult<? extends OpenAction> result;
+            if (json.isJsonPrimitive()) {
+                result = WildCardOpenAction.CODEC.decode(JsonOps.INSTANCE, json)
+                    .map(Pair::getFirst);
+            } else {
+                result = DefaultOpenAction.CODEC.decode(JsonOps.INSTANCE, json)
+                    .map(Pair::getFirst);
             }
+            result.resultOrPartial(error -> OpenInInventory.LOGGER.error(
+                    "Error when parsing open action from config: {}",
+                    error
+                ))
+                .ifPresent(action -> registry.register(action.stack(), action.sneak()));
         }
-    }
-
-    public static JsonObject normalizeToObject(JsonElement json) {
-        if (json.isJsonPrimitive()) {
-            var result = new JsonObject();
-            result.add("id", json);
-            return result;
-        }
-        return json.getAsJsonObject();
-    }
-
-    public static Collection<JsonObject> unzipTemplate(OpenActionRegistry registry, JsonObject json) {
-        var id = json.get("id").getAsJsonPrimitive().getAsString();
-        var replaced = registry.findAndApplyTemplate(id);
-        if (replaced.size() == 1) {
-            return List.of(json);
-        }
-        return replaced.stream()
-            .map(JsonPrimitive::new)
-            .map(primitive -> {
-                var result = json.deepCopy();
-                result.add("id", primitive);
-                return result;
-            })
-            .toList();
     }
 }
