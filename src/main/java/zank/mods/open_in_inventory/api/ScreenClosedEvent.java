@@ -5,7 +5,7 @@ import dev.architectury.event.EventFactory;
 
 import java.util.Objects;
 
-/// After [net.minecraft.client.MinecraftClient#currentScreen] became `null`
+/// After [net.minecraft.client.Minecraft#screen] became `null`
 ///
 /// @author ZZZank
 public interface ScreenClosedEvent {

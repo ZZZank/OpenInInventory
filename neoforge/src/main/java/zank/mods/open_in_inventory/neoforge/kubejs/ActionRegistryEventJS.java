@@ -1,7 +1,7 @@
 package zank.mods.open_in_inventory.neoforge.kubejs;
 
 import dev.latvian.mods.kubejs.event.KubeEvent;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
 public class ActionRegistryEventJS implements KubeEvent {

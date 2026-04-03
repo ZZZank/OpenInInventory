@@ -17,7 +17,7 @@ public interface OpenAction {
         //? if <1.21 {
         if (match.hasTag()) {
         //? } else
-        //if (!match.getComponentChanges().isEmpty()) {
+        //if (!match.getComponentsPatch().isEmpty()) {
             return ItemStack.matches(match, stack);
         } else {
             return stack.is(match.getItem());

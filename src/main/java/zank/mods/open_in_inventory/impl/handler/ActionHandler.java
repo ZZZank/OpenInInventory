@@ -63,7 +63,7 @@ public class ActionHandler {
         var player = client.player;
         var world = client.level;
         if (player != null && world != null && _screen instanceof AbstractContainerScreen<?> screen) {
-            var focused = ((AccessHandledScreen) screen).getFocusedSlot();
+            var focused = ((AccessHandledScreen) screen).getHoveredSlot();
             var matched = matchAction(_screen, player, focused);
             if (matched == null) {
                 return EventResult.pass();
@@ -189,10 +189,16 @@ public class ActionHandler {
         }
     }
 
-    public void tooltip(ItemStack stack, List<Component> lines, TooltipFlag cx/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
+    public void tooltip(
+        ItemStack stack,
+        List<Component> lines,
+        //? if > 1.21
+        //net.minecraft.world.item.Item.TooltipContext ignored1,
+        TooltipFlag ignored2
+    ) {
         var client = Minecraft.getInstance();
         if (client.screen instanceof AccessHandledScreen access) {
-            var matched = matchAction(client.screen, client.player, access.getFocusedSlot());
+            var matched = matchAction(client.screen, client.player, access.getHoveredSlot());
             if (matched != null) {
                 lines.add(Component.translatable("open_in_inventory.tooltip.use"));
             }

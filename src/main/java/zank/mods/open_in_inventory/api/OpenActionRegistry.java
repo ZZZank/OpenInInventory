@@ -39,7 +39,7 @@ public interface OpenActionRegistry {
     }
 
     /// Equivalent of `registerIfPresent(..., false)`
-    /// @see #registerIfPresent(Identifier, boolean)
+    /// @see #registerIfPresent(ResourceLocation, boolean)
     default Optional<OpenAction> registerIfPresent(ResourceLocation itemId) {
         return registerIfPresent(itemId, false);
     }
