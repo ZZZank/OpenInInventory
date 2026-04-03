@@ -2,6 +2,7 @@ package zank.mods.open_in_inventory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import net.minecraft.client.resource.language.I18n;
 
 import java.io.IOException;
@@ -14,13 +15,15 @@ import java.util.Set;
  * @author ZZZank
  */
 public record OpenInInventoryConfig(
-    Set<String> screenBlacklist,
-    boolean requireEmptyMainHand,
-    boolean requireSingleStack,
-    int openDelay,
-    boolean debug,
-    JsonArray enabledItems
+    @SerializedName("screen_blacklist") Set<String> screenBlacklist,
+    @SerializedName("require_enpty_main_hand") boolean requireEmptyMainHand,
+    @SerializedName("require_single_stack") boolean requireSingleStack,
+    @SerializedName("open_delay") int openDelay,
+    @SerializedName("debug") boolean debug,
+    @SerializedName("enabled_items") JsonArray enabledItems
 ) {
+    public static final String LANG_PREFIX = OpenInInventory.ID + ".config.";
+
     public OpenInInventoryConfig() {
         this(
             new HashSet<>(),
@@ -35,10 +38,11 @@ public record OpenInInventoryConfig(
     public void write(Path configFile) throws IOException {
         var json = (JsonObject) OpenInInventory.GSON.toJsonTree(this);
 
+        json.addProperty("//", I18n.translate(LANG_PREFIX + "refresh"));
         for (var recordComponent : OpenInInventoryConfig.class.getRecordComponents()) {
             var name = recordComponent.getName();
 
-            var commentStr = I18n.translate(OpenInInventory.ID + ".config." + name);
+            var commentStr = I18n.translate(LANG_PREFIX + name);
             if (commentStr.indexOf('\n') < 0) {
                 json.addProperty("//" + name, commentStr);
             } else {
