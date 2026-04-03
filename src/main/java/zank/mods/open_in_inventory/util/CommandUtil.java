@@ -1,5 +1,6 @@
 package zank.mods.open_in_inventory.util;
 
+import com.mojang.brigadier.context.CommandContext;
 import dev.architectury.event.events.client.ClientCommandRegistrationEvent;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -36,5 +37,12 @@ public abstract class CommandUtil {
         Supplier<Text> message
     ) {
         sendSuccess(source, message, false);
+    }
+
+    public static void sendSuccess(
+        CommandContext<ClientCommandRegistrationEvent.ClientCommandSourceStack> cx,
+        Supplier<Text> message
+    ) {
+        sendSuccess(cx.getSource(), message);
     }
 }
