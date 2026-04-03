@@ -36,14 +36,12 @@ public record OpenInInventoryConfig(
     }
 
     public void write(Path configFile) throws IOException {
-        var json = (JsonObject) OpenInInventory.GSON.toJsonTree(this);
+        var original = (JsonObject) OpenInInventory.GSON.toJsonTree(this);
+        var json = new JsonObject();
 
         json.addProperty("//", I18n.translate(LANG_PREFIX + "refresh"));
-        for (var recordComponent : OpenInInventoryConfig.class.getRecordComponents()) {
-            // .getAccessor() because @SerializedName didn't have ElementType.RECORD_COMPONENT target
-            var name = recordComponent.getAccessor()
-                .getAnnotation(SerializedName.class)
-                .value();
+        for (var entry : original.entrySet()) {
+            var name = entry.getKey();
 
             var commentStr = I18n.translate(LANG_PREFIX + name);
             if (commentStr.indexOf('\n') < 0) {
@@ -51,6 +49,7 @@ public record OpenInInventoryConfig(
             } else {
                 json.add("//" + name, OpenInInventory.GSON.toJsonTree(commentStr.split("\n")));
             }
+            json.add(name, entry.getValue());
         }
 
         try (var writer = Files.newBufferedWriter(configFile)) {
