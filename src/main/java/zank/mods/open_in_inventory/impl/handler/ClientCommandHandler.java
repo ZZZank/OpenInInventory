@@ -60,6 +60,7 @@ public class ClientCommandHandler {
     private static int refresh(CommandContext<ClientCommandSourceStack> cx) {
         OpenInInventory.refreshConfig();
         OpenInInventory.COMMON.actionHandler.reset();
+        CommandUtil.sendSuccess(cx.getSource(), () -> Text.translatable("open_in_inventory.command.refresh.done"));
         return Command.SINGLE_SUCCESS;
     }
 

@@ -8,5 +8,7 @@
   "open_in_inventory.config.open_delay": "delay (in tick) from swapping item to main hand to use such item",
   "open_in_inventory.config.require_single_stack": "Prevent open-in-inventory from applying to item stacks containing more than one item",
   "open_in_inventory.config.require_empty_main_hand": "Disable open-in-inventory when player is holding something in main hand",
-  "open_in_inventory.config.screen_blacklist": "Class name of screen in which this mod will be disabled"
+  "open_in_inventory.config.screen_blacklist": "Class name of screen in which this mod will be disabled",
+  "open_in_inventory.command.": "",
+  "open_in_inventory.command.refresh.done": "Config & Action handler refreshed"
 }
