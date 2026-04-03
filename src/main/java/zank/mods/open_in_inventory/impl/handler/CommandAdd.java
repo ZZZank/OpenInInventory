@@ -20,6 +20,7 @@ import zank.mods.open_in_inventory.util.CommandUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -56,8 +57,12 @@ abstract class CommandAdd {
     }
 
     public static int execute(CommandContext<ClientCommandSourceStack> cx) {
-        var player = cx.getSource().arch$getPlayer();
         var options = OPTIONS.parse(cx.getArgument("args", String.class));
+        return execute(cx, options);
+    }
+
+    public static int execute(CommandContext<ClientCommandSourceStack> cx, Set<CommandOption> options) {
+        var player = cx.getSource().arch$getPlayer();
 
         var stacks = options.contains(HOTBAR)
             ? player.getInventory().main.subList(0, 9)
