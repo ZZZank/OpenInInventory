@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
-    mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
+    mappings(loom.officialMojangMappings())
     "forge"("net.minecraftforge:forge:$minecraft-${common.mod.dep("forge_loader")}")
 
     modImplementation("dev.architectury:architectury-forge:${common.mod.dep("arch-api")}")

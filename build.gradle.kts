@@ -23,7 +23,7 @@ architectury.common(stonecutter.tree.branches.mapNotNull {
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
-    mappings("net.fabricmc:yarn:$minecraft+build.${mod.dep("yarn_build")}:v2")
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
 
     modApi("dev.architectury:architectury:${mod.dep("arch-api")}") {

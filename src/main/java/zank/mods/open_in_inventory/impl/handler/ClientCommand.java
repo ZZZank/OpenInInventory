@@ -7,11 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.architectury.event.events.client.ClientCommandRegistrationEvent.ClientCommandSourceStack;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandSource;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.impl.OpenActionRegistryImpl;
 import zank.mods.open_in_inventory.util.CommandUtil;
@@ -19,6 +14,11 @@ import zank.mods.open_in_inventory.util.CommandUtil;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 
 import static dev.architectury.event.events.client.ClientCommandRegistrationEvent.argument;
 import static dev.architectury.event.events.client.ClientCommandRegistrationEvent.literal;
@@ -29,7 +29,7 @@ import static dev.architectury.event.events.client.ClientCommandRegistrationEven
 public class ClientCommand {
     public static void register(
         CommandDispatcher<ClientCommandSourceStack> dispatcher,
-        CommandRegistryAccess context
+        CommandBuildContext context
     ) {
         // open-in-inventory is easier to typed
         dispatcher.register(literal(OpenInInventory.ID.replace('_', '-'))
@@ -63,15 +63,15 @@ public class ClientCommand {
     private static int refresh(CommandContext<ClientCommandSourceStack> cx) {
         OpenInInventory.refreshConfig();
         OpenInInventory.COMMON.actionHandler.reset();
-        CommandUtil.sendSuccess(cx, () -> Text.translatable("open_in_inventory.command.refresh"));
+        CommandUtil.sendSuccess(cx, () -> Component.translatable("open_in_inventory.command.refresh"));
         return Command.SINGLE_SUCCESS;
     }
 
     private static int replaceTemplate(CommandContext<ClientCommandSourceStack> cx) {
         var key = cx.getArgument("key", String.class);
         var replace = OpenInInventory.ACTION_REGISTRY.getReplaceTemplate(key);
-        Supplier<Text> message = () -> Text.empty()
-            .append(Text.literal(key).setStyle(Style.EMPTY.withColor(Formatting.GREEN)))
+        Supplier<Component> message = () -> Component.empty()
+            .append(Component.literal(key).setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)))
             .append(" -> ")
             .append(OpenInInventory.GSON.toJson(replace));
         CommandUtil.sendSuccess(cx, message);
@@ -83,6 +83,6 @@ public class ClientCommand {
         SuggestionsBuilder builder
     ) {
         var registry = (OpenActionRegistryImpl) OpenInInventory.ACTION_REGISTRY;
-        return CommandSource.suggestMatching(registry.replaceTemplates.keySet(), builder);
+        return SharedSuggestionProvider.suggest(registry.replaceTemplates.keySet(), builder);
     }
 }

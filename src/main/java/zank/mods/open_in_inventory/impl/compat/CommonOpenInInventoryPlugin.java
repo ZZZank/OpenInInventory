@@ -1,7 +1,5 @@
 package zank.mods.open_in_inventory.impl.compat;
 
-import net.minecraft.registry.Registries;
-import net.minecraft.util.DyeColor;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 
@@ -9,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.DyeColor;
 
 /**
  * @author ZZZank
@@ -72,9 +72,9 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
             helper.tryRegister("portable_fluid_cell_{ae2:capacity}");
         }
         if (helper.check("patchouli")) {
-            if (Registries.ITEM.containsId(helper.id("guide_book"))) {
-                var baseItem = Registries.ITEM.get(helper.id("guide_book"));
-                Registries.ITEM.stream()
+            if (BuiltInRegistries.ITEM.containsKey(helper.id("guide_book"))) {
+                var baseItem = BuiltInRegistries.ITEM.get(helper.id("guide_book"));
+                BuiltInRegistries.ITEM.stream()
                     .filter(baseItem.getClass()::isInstance)
                     .forEach(registry::register);
             }

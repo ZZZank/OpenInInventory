@@ -2,7 +2,7 @@ package zank.mods.open_in_inventory.impl;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import zank.mods.open_in_inventory.api.OpenAction;
 
 /// JSON representation:

@@ -3,13 +3,12 @@ package zank.mods.open_in_inventory;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.client.resource.language.I18n;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import net.minecraft.client.resources.language.I18n;
 
 /**
  * @author ZZZank
@@ -39,11 +38,11 @@ public record OpenInInventoryConfig(
         var original = (JsonObject) OpenInInventory.GSON.toJsonTree(this);
         var json = new JsonObject();
 
-        json.addProperty("//", I18n.translate(LANG_PREFIX + "refresh"));
+        json.addProperty("//", I18n.get(LANG_PREFIX + "refresh"));
         for (var entry : original.entrySet()) {
             var name = entry.getKey();
 
-            var commentStr = I18n.translate(LANG_PREFIX + name);
+            var commentStr = I18n.get(LANG_PREFIX + name);
             if (commentStr.indexOf('\n') < 0) {
                 json.addProperty("//" + name, commentStr);
             } else {

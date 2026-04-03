@@ -1,13 +1,13 @@
 package zank.mods.open_in_inventory.impl.compat;
 
 import dev.architectury.platform.Platform;
-import net.minecraft.util.Identifier;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * @author ZZZank
@@ -25,8 +25,8 @@ public final class ModSupportHelper {
         return Platform.isModLoaded(mod);
     }
 
-    public Identifier id(String path) {
-        return Identifier.of(mod, path);
+    public ResourceLocation id(String path) {
+        return ResourceLocation.tryBuild(mod, path);
     }
 
     /// find and apply all possible templates in `path`, and try to register all of them. Failed registration will cause

@@ -50,13 +50,7 @@ repositories {
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
-    @Suppress("UnstableApiUsage")
-    mappings(loom.layered {
-        mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
-        common.mod.dep("neoforge_patch").takeUnless { it.startsWith('[') }?.let {
-            mappings("dev.architectury:yarn-mappings-patch-neoforge:$it")
-        }
-    })
+    mappings(loom.officialMojangMappings())
     "neoForge"("net.neoforged:neoforge:${common.mod.dep("neoforge_loader")}")
 
     modImplementation("dev.architectury:architectury-neoforge:${common.mod.dep("arch-api")}")

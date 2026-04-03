@@ -2,12 +2,10 @@ package zank.mods.open_in_inventory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.architectury.event.events.client.*;
 import dev.architectury.platform.Platform;
 import dev.architectury.utils.Env;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.InputUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
@@ -24,6 +22,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 
 /**
  * @author ZZZank
@@ -74,10 +74,10 @@ public abstract class OpenInInventory {
         return !blacklist.isEmpty() && blacklist.contains(screen.getClass().getName());
     }
 
-    public static boolean isShiftPressed(MinecraftClient client) {
-        var handle = client.getWindow().getHandle();
-        return InputUtil.isKeyPressed(handle, InputUtil.GLFW_KEY_LEFT_SHIFT)
-               || InputUtil.isKeyPressed(handle, InputUtil.GLFW_KEY_RIGHT_SHIFT);
+    public static boolean isShiftPressed(Minecraft client) {
+        var handle = client.getWindow().getWindow();
+        return InputConstants.isKeyDown(handle, InputConstants.KEY_LSHIFT)
+               || InputConstants.isKeyDown(handle, InputConstants.KEY_RSHIFT);
     }
 
     public static void refreshConfig() {

@@ -46,7 +46,7 @@ configurations {
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
-    mappings("net.fabricmc:yarn:$minecraft+build.${common.mod.dep("yarn_build")}:v2")
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${common.mod.dep("fabric-api")}")
 

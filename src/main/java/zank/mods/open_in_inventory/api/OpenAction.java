@@ -1,6 +1,6 @@
 package zank.mods.open_in_inventory.api;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author ZZZank
@@ -15,12 +15,12 @@ public interface OpenAction {
     default boolean match(ItemStack stack) {
         var match = this.stack();
         //? if <1.21 {
-        if (match.hasNbt()) {
+        if (match.hasTag()) {
         //? } else
         //if (!match.getComponentChanges().isEmpty()) {
-            return ItemStack.areEqual(match, stack);
+            return ItemStack.matches(match, stack);
         } else {
-            return stack.isOf(match.getItem());
+            return stack.is(match.getItem());
         }
     }
 }

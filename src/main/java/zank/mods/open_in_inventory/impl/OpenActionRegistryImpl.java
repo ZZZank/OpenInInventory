@@ -1,11 +1,11 @@
 package zank.mods.open_in_inventory.impl;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
 import java.util.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author ZZZank
@@ -32,7 +32,7 @@ public class OpenActionRegistryImpl implements OpenActionRegistry {
     @Override
     public OpenAction register(ItemStack stack, boolean sneak) {
         OpenAction action;
-        if (sneak == OpenAction.SNEAK_DEFAULT && ItemStack.areEqual(stack, stack.getItem().getDefaultStack())) {
+        if (sneak == OpenAction.SNEAK_DEFAULT && ItemStack.matches(stack, stack.getItem().getDefaultInstance())) {
             action = new WildCardOpenAction(stack.getItem());
         } else {
             action = new DefaultOpenAction(stack, sneak);

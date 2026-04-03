@@ -1,9 +1,9 @@
 package zank.mods.open_in_inventory.impl;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import zank.mods.open_in_inventory.api.OpenAction;
 
 /// JSON representation:
@@ -12,13 +12,13 @@ import zank.mods.open_in_inventory.api.OpenAction;
 /// ```
 /// @author ZZZank
 public record WildCardOpenAction(Item item) implements OpenAction {
-    public static final Codec<WildCardOpenAction> CODEC = Registries.ITEM
-        .getCodec()
+    public static final Codec<WildCardOpenAction> CODEC = BuiltInRegistries.ITEM
+        .byNameCodec()
         .xmap(WildCardOpenAction::new, WildCardOpenAction::item);
 
     @Override
     public ItemStack stack() {
-        return item.getDefaultStack();
+        return item.getDefaultInstance();
     }
 
     @Override
@@ -28,6 +28,6 @@ public record WildCardOpenAction(Item item) implements OpenAction {
 
     @Override
     public boolean match(ItemStack stack) {
-        return stack.isOf(item);
+        return stack.is(item);
     }
 }

@@ -1,11 +1,10 @@
 package zank.mods.open_in_inventory.api;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
-
 import java.util.*;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author ZZZank
@@ -25,7 +24,7 @@ public interface OpenActionRegistry {
     }
 
     default OpenAction register(Item item, boolean sneak) {
-        return register(item.getDefaultStack(), sneak);
+        return register(item.getDefaultInstance(), sneak);
     }
 
     /// Equivalent of `register(..., false)`
@@ -34,27 +33,27 @@ public interface OpenActionRegistry {
         return register(item, false);
     }
 
-    default Optional<OpenAction> registerIfPresent(Identifier itemId, boolean sneak) {
-        var item = Registries.ITEM.get(itemId);
+    default Optional<OpenAction> registerIfPresent(ResourceLocation itemId, boolean sneak) {
+        var item = BuiltInRegistries.ITEM.get(itemId);
         return item == null ? Optional.empty() : Optional.of(register(item, sneak));
     }
 
     /// Equivalent of `registerIfPresent(..., false)`
     /// @see #registerIfPresent(Identifier, boolean)
-    default Optional<OpenAction> registerIfPresent(Identifier itemId) {
+    default Optional<OpenAction> registerIfPresent(ResourceLocation itemId) {
         return registerIfPresent(itemId, false);
     }
 
     /// search for registered template with such key, return `null` if not found
     ///
-    /// immediate template is not supported, use [#findAndApplyTemplate(java.lang.String)] instead
+    /// immediate template is not supported, use [#findAndApplyTemplate(String)] instead
     Collection<String> getReplaceTemplate(String key);
 
     /// Supports:
     /// - registered template: {color}
     /// - immediate template: {iron|gold|diamond}
     ///
-    /// @see OpenInInventoryPlugin#registerReplaceTemplate(java.util.Map)
+    /// @see OpenInInventoryPlugin#registerReplaceTemplate(Map)
     default Collection<String> findAndApplyTemplate(String original) {
         // example: some_mod:{color}_bag
 

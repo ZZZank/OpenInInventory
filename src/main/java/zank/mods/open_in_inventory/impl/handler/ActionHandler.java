@@ -1,24 +1,6 @@
 package zank.mods.open_in_inventory.impl.handler;
 
 import dev.architectury.event.EventResult;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-//? if <1.21 {
-import net.minecraft.client.item.TooltipContext;
-//? } else
-//import net.minecraft.item.Item.TooltipContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import zank.mods.open_in_inventory.OpenInInventory;
@@ -26,6 +8,20 @@ import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.mixin.AccessHandledScreen;
 
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 
 /**
  * @author ZZZank
@@ -55,7 +51,7 @@ public class ActionHandler {
     }
 
     public EventResult beforeMouseClicked(
-        MinecraftClient client,
+        Minecraft client,
         Screen _screen,
         double mouseX,
         double mouseY,
@@ -65,24 +61,24 @@ public class ActionHandler {
             return EventResult.pass();
         }
         var player = client.player;
-        var world = client.world;
-        if (player != null && world != null && _screen instanceof HandledScreen<?> screen) {
+        var world = client.level;
+        if (player != null && world != null && _screen instanceof AbstractContainerScreen<?> screen) {
             var focused = ((AccessHandledScreen) screen).getFocusedSlot();
             var matched = matchAction(_screen, player, focused);
             if (matched == null) {
                 return EventResult.pass();
             }
 
-            swapFrom = focused.getIndex();
-            swapTo = player.getInventory().selectedSlot;
+            swapFrom = focused.getContainerSlot();
+            swapTo = player.getInventory().selected;
 
-            var stackBeforeSwap = focused.getStack();
+            var stackBeforeSwap = focused.getItem();
 
             if (OpenInInventory.CONFIG.debug()) {
                 OpenInInventory.LOGGER.info(
                     "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
-                    focused.getIndex(),
-                    focused.id,
+                    focused.getContainerSlot(),
+                    focused.index,
                     swapTo,
                     screen
                 );
@@ -91,30 +87,30 @@ public class ActionHandler {
             if (swapFrom < 9) {
                 // In Forge, swapping stack between stacks in hotbar will fail
                 // I don't know why, but let's just avoid swapping stack
-                player.getInventory().selectedSlot = swapFrom;
+                player.getInventory().selected = swapFrom;
             } else {
                 /// the screen is not always [InventoryScreen], so we sometimes use [Slot#id]
                 /// (relative to [ScreenHandler]) instead of [Slot#getIndex()]
-                var actualSwapFrom = screen instanceof AbstractInventoryScreen
-                    ? focused.getIndex()
-                    : focused.id;
+                var actualSwapFrom = screen instanceof EffectRenderingInventoryScreen
+                    ? focused.getContainerSlot()
+                    : focused.index;
                 performSwap(client, screen, actualSwapFrom, player);
             }
 
-            if (player.getMainHandStack() != stackBeforeSwap) {
+            if (player.getMainHandItem() != stackBeforeSwap) {
                 return EventResult.pass();
             }
 
-            shouldUpdateSneak = matched.sneak() != client.options.sneakKey.isPressed();
+            shouldUpdateSneak = matched.sneak() != client.options.keyShift.isDown();
             if (shouldUpdateSneak) {
-                if (client.options.getSneakToggled().getValue()) {
-                    client.options.sneakKey.setPressed(true);
+                if (client.options.toggleCrouch().get()) {
+                    client.options.keyShift.setDown(true);
                 } else {
-                    client.options.sneakKey.setPressed(matched.sneak());
+                    client.options.keyShift.setDown(matched.sneak());
                 }
             }
 
-            itemUseAtTime = world.getTime() + OpenInInventory.CONFIG.openDelay();
+            itemUseAtTime = world.getGameTime() + OpenInInventory.CONFIG.openDelay();
             stage = ActionStage.SWAPPED;
             action = matched;
 
@@ -123,32 +119,32 @@ public class ActionHandler {
         return EventResult.pass();
     }
 
-    private void performSwap(MinecraftClient client, HandledScreen<?> screen, int swapFrom, ClientPlayerEntity player) {
-        assert client.interactionManager != null;
-        client.interactionManager.clickSlot(
-            screen.getScreenHandler().syncId,
+    private void performSwap(Minecraft client, AbstractContainerScreen<?> screen, int swapFrom, LocalPlayer player) {
+        assert client.gameMode != null;
+        client.gameMode.handleInventoryMouseClick(
+            screen.getMenu().containerId,
             swapFrom,
             this.swapTo,
-            SlotActionType.SWAP,
+            ClickType.SWAP,
             player
         );
     }
 
-    public void scheduleItemUse(ClientWorld world) {
-        var client = MinecraftClient.getInstance();
+    public void scheduleItemUse(ClientLevel world) {
+        var client = Minecraft.getInstance();
         var player = client.player;
 
-        if (stage == ActionStage.SWAPPED && player != null && world.getTime() >= itemUseAtTime) {
+        if (stage == ActionStage.SWAPPED && player != null && world.getGameTime() >= itemUseAtTime) {
             var action = this.action;
-            if (action != null && action.match(player.getMainHandStack())) {
-                assert client.interactionManager != null;
-                client.interactionManager.interactItem(player, Hand.MAIN_HAND);
+            if (action != null && action.match(player.getMainHandItem())) {
+                assert client.gameMode != null;
+                client.gameMode.useItem(player, InteractionHand.MAIN_HAND);
 
                 if (shouldUpdateSneak) {
-                    if (client.options.getSneakToggled().getValue()) {
-                        client.options.sneakKey.setPressed(true);
+                    if (client.options.toggleCrouch().get()) {
+                        client.options.keyShift.setDown(true);
                     } else {
-                        client.options.sneakKey.setPressed(!action.sneak());
+                        client.options.keyShift.setDown(!action.sneak());
                     }
                 }
                 if (OpenInInventory.CONFIG.debug()) {
@@ -160,15 +156,15 @@ public class ActionHandler {
                 }
             }
             stage = ActionStage.USED;
-        } else if (stage == ActionStage.SWAP_BACK_SCREEN && player != null && client.currentScreen instanceof AbstractInventoryScreen<?> inv) {
-            var slots = inv.getScreenHandler().slots;
+        } else if (stage == ActionStage.SWAP_BACK_SCREEN && player != null && client.screen instanceof EffectRenderingInventoryScreen<?> inv) {
+            var slots = inv.getMenu().slots;
             if (swapFrom < 9) {
-                player.getInventory().selectedSlot = swapTo;
-            } else if (swapFrom < slots.size() && inv.getScreenHandler().canInsertIntoSlot(slots.get(swapFrom))) {
+                player.getInventory().selected = swapTo;
+            } else if (swapFrom < slots.size() && inv.getMenu().canDragTo(slots.get(swapFrom))) {
                 // place items back if player open inventory
                 performSwap(client, inv, swapFrom, player);
                 if (OpenInInventory.CONFIG.debug()) {
-                    OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, from {}, to {}, screen {}", swapFrom, swapTo, client.currentScreen);
+                    OpenInInventory.LOGGER.info("SWAP_BACK_SCREEN -> IDLE, from {}, to {}, screen {}", swapFrom, swapTo, client.screen);
                 }
             } else {
                 if (OpenInInventory.CONFIG.debug()) {
@@ -182,7 +178,7 @@ public class ActionHandler {
     public void screenClosed() {
         if (stage == ActionStage.USED) {
             stage = ActionStage.SWAP_BACK_SCREEN;
-            var client = MinecraftClient.getInstance();
+            var client = Minecraft.getInstance();
             var player = client.player;
             if (player != null) {
                 if (OpenInInventory.CONFIG.debug()) {
@@ -193,34 +189,34 @@ public class ActionHandler {
         }
     }
 
-    public void tooltip(ItemStack stack, List<Text> lines, TooltipContext cx/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
-        var client = MinecraftClient.getInstance();
-        if (client.currentScreen instanceof AccessHandledScreen access) {
-            var matched = matchAction(client.currentScreen, client.player, access.getFocusedSlot());
+    public void tooltip(ItemStack stack, List<Component> lines, TooltipFlag cx/*? if >=1.21 >> ')'*//*, net.minecraft.item.tooltip.TooltipType _type*/) {
+        var client = Minecraft.getInstance();
+        if (client.screen instanceof AccessHandledScreen access) {
+            var matched = matchAction(client.screen, client.player, access.getFocusedSlot());
             if (matched != null) {
-                lines.add(Text.translatable("open_in_inventory.tooltip.use"));
+                lines.add(Component.translatable("open_in_inventory.tooltip.use"));
             }
         }
     }
 
-    private OpenAction matchAction(@Nullable Screen screen, @Nullable PlayerEntity player, @Nullable Slot focused) {
+    private OpenAction matchAction(@Nullable Screen screen, @Nullable Player player, @Nullable Slot focused) {
         if (
             // basic
             stage == ActionStage.IDLE
             && screen != null
             && player != null
             && focused != null
-            && !OpenInInventory.isShiftPressed(MinecraftClient.getInstance())
+            && !OpenInInventory.isShiftPressed(Minecraft.getInstance())
             // config
-            && (!OpenInInventory.CONFIG.requireSingleStack() || focused.getStack().getCount() == 1)
-            && (!OpenInInventory.CONFIG.requireEmptyMainHand() || player.getMainHandStack().isEmpty())
+            && (!OpenInInventory.CONFIG.requireSingleStack() || focused.getItem().getCount() == 1)
+            && (!OpenInInventory.CONFIG.requireEmptyMainHand() || player.getMainHandItem().isEmpty())
             && !OpenInInventory.isScreenBlackListed(screen)
             // container
-            && focused.inventory == player.getInventory()
-            && screen instanceof HandledScreen<?> handled
-            && handled.getScreenHandler().getCursorStack().isEmpty()
+            && focused.container == player.getInventory()
+            && screen instanceof AbstractContainerScreen<?> handled
+            && handled.getMenu().getCarried().isEmpty()
         ) {
-            return OpenInInventory.ACTION_REGISTRY.get(focused.getStack());
+            return OpenInInventory.ACTION_REGISTRY.get(focused.getItem());
         }
         return null;
     }

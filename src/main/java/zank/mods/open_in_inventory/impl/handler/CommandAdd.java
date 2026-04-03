@@ -7,9 +7,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.serialization.JsonOps;
 import dev.architectury.event.events.client.ClientCommandRegistrationEvent.ClientCommandSourceStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import zank.mods.open_in_inventory.OpenInInventory;
 import zank.mods.open_in_inventory.api.OpenAction;
 import zank.mods.open_in_inventory.impl.DefaultOpenAction;
@@ -23,6 +20,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * @author ZZZank
@@ -48,9 +48,9 @@ abstract class CommandAdd {
 
         var suggested = OPTIONS.suggestNext(remaining);
         for (var option : suggested) {
-            builder.suggest("--" + option.name(), Text.translatable("open_in_inventory.command.add.option." + option.name()));
+            builder.suggest("--" + option.name(), Component.translatable("open_in_inventory.command.add.option." + option.name()));
             if (option.hasShorthand()) {
-                builder.suggest("-" + option.shorthand(), Text.literal("Equivalent of: ").append("--" + option.name()));
+                builder.suggest("-" + option.shorthand(), Component.literal("Equivalent of: ").append("--" + option.name()));
             }
         }
         return builder.buildFuture();
@@ -65,8 +65,8 @@ abstract class CommandAdd {
         var player = cx.getSource().arch$getPlayer();
 
         var stacks = options.contains(HOTBAR)
-            ? player.getInventory().main.subList(0, 9)
-            : List.of(player.getMainHandStack());
+            ? player.getInventory().items.subList(0, 9)
+            : List.of(player.getMainHandItem());
 
         Function<ItemStack, OpenAction> actionCtor;
         if (options.contains(WILDCARD)) {
@@ -96,19 +96,19 @@ abstract class CommandAdd {
             .toList();
 
         if (actionJsons.isEmpty()) {
-            CommandUtil.sendSuccess(cx, () -> Text.literal("No items to add, skipping"));
+            CommandUtil.sendSuccess(cx, () -> Component.literal("No items to add, skipping"));
             return 0;
         }
 
         if (options.contains(SHOW)) {
             CommandUtil.sendSuccess(
                 cx,
-                () -> Text.translatable(
+                () -> Component.translatable(
                     "open_in_inventory.command.add.show",
-                    Text.literal(String.valueOf(actionJsons.size())).formatted(Formatting.GRAY),
-                    Text.literal(OpenInInventory.GSON.toJson(actionJsons))
-                        .fillStyle(CommandUtil.clickToCopy(OpenInInventory.GSON.toJson(actionJsons)))
-                        .formatted(Formatting.GREEN)
+                    Component.literal(String.valueOf(actionJsons.size())).withStyle(ChatFormatting.GRAY),
+                    Component.literal(OpenInInventory.GSON.toJson(actionJsons))
+                        .withStyle(CommandUtil.clickToCopy(OpenInInventory.GSON.toJson(actionJsons)))
+                        .withStyle(ChatFormatting.GREEN)
                 )
             );
             return 1;
@@ -118,7 +118,7 @@ abstract class CommandAdd {
             addToCfg(cx, actionJsons);
             return Command.SINGLE_SUCCESS;
         } catch (IOException e) {
-            cx.getSource().arch$sendFailure(Text.literal("Failed to save config: " + e));
+            cx.getSource().arch$sendFailure(Component.literal("Failed to save config: " + e));
             return 0;
         }
     }
@@ -134,10 +134,10 @@ abstract class CommandAdd {
         OpenInInventory.refreshConfig();
 
         CommandUtil.sendSuccess(
-            cx.getSource(), () -> Text.translatable(
+            cx.getSource(), () -> Component.translatable(
                 "open_in_inventory.command.add",
-                Text.literal(String.valueOf(actionJsons.size())).formatted(Formatting.GRAY)
-            ).fillStyle(CommandUtil.hover(Text.literal(OpenInInventory.GSON.toJson(actionJsons))))
+                Component.literal(String.valueOf(actionJsons.size())).withStyle(ChatFormatting.GRAY)
+            ).withStyle(CommandUtil.hover(Component.literal(OpenInInventory.GSON.toJson(actionJsons))))
         );
     }
 }
