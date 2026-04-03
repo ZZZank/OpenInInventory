@@ -8,5 +8,14 @@
   "open_in_inventory.config.open_delay": "将物品切换至主手后，使用该物品前的延迟（单位：游戏刻）",
   "open_in_inventory.config.require_single_stack": "对物品数量超过1的物品堆禁用背包内打开功能",
   "open_in_inventory.config.require_empty_main_hand": "当玩家主手持握物品时禁用背包内打开功能",
-  "open_in_inventory.config.screen_blacklist": "屏幕类名称列表，当前屏幕在列表中时，本模组会被禁用"
+  "open_in_inventory.config.screen_blacklist": "屏幕类名称列表，当前屏幕在列表中时，本模组会被禁用",
+  "open_in_inventory.command.": "",
+  "open_in_inventory.command.refresh": "配置与动作状态已刷新",
+  "open_in_inventory.command.add": "已将 %s 个物品添加到配置，悬停查看预览",
+  "open_in_inventory.command.add.show": "已收集 %s 个物品：%s",
+  "open_in_inventory.command.add.option.": "%s 的简写形式",
+  "open_in_inventory.command.add.option.hotbar": "收集快捷栏中所有有效物品（而不止主手物品）",
+  "open_in_inventory.command.add.option.wildcard": "忽略额外数据（例如 NBT）",
+  "open_in_inventory.command.add.option.sneak": "执行动作时潜行",
+  "open_in_inventory.command.add.option.show": "显示已收集的物品动作但不添加到配置"
 }
