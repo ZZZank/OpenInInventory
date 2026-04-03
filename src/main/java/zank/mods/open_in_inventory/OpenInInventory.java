@@ -37,7 +37,7 @@ public abstract class OpenInInventory {
         .create();
 
     public static OpenInInventory COMMON;
-    public static OpenInInventoryConfig CONFIG;
+    public static OpenInInventoryConfig CONFIG = new OpenInInventoryConfig();
     public static Path CONFIG_PATH;
     public static final OpenActionRegistry ACTION_REGISTRY = new OpenActionRegistryImpl();
 
@@ -81,14 +81,20 @@ public abstract class OpenInInventory {
     }
 
     public static void refreshConfig() {
-        try (var reader = Files.newBufferedReader(CONFIG_PATH)) {
-            CONFIG = OpenInInventory.GSON.fromJson(reader, OpenInInventoryConfig.class);
-            OpenInInventory.CONFIG.write(CONFIG_PATH);
+        if (Files.exists(CONFIG_PATH)) {
+            try (var reader = Files.newBufferedReader(CONFIG_PATH)) {
+                CONFIG = OpenInInventory.GSON.fromJson(reader, OpenInInventoryConfig.class);
+            } catch (IOException e) {
+                LOGGER.error("Error when reading config", e);
+            }
+        }
+        try {
+            CONFIG.write(CONFIG_PATH);
         } catch (IOException e) {
-            OpenInInventory.LOGGER.error("Error when refreshing config", e);
+            LOGGER.error("Error when writing config", e);
         }
 
-        var registry = (OpenActionRegistryImpl) OpenInInventory.ACTION_REGISTRY;
+        var registry = (OpenActionRegistryImpl) ACTION_REGISTRY;
 
         // register template before using them (parse config)
         registry.replaceTemplates.clear();
