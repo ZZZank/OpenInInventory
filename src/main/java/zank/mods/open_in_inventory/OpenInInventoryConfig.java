@@ -40,7 +40,10 @@ public record OpenInInventoryConfig(
 
         json.addProperty("//", I18n.translate(LANG_PREFIX + "refresh"));
         for (var recordComponent : OpenInInventoryConfig.class.getRecordComponents()) {
-            var name = recordComponent.getName();
+            // .getAccessor() because @SerializedName didn't have ElementType.RECORD_COMPONENT target
+            var name = recordComponent.getAccessor()
+                .getAnnotation(SerializedName.class)
+                .value();
 
             var commentStr = I18n.translate(LANG_PREFIX + name);
             if (commentStr.indexOf('\n') < 0) {
