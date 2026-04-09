@@ -1,7 +1,13 @@
+## Open In Inventory 2.0.0 -> 2.0.1
+
+Fix template support in config
+
+---
+
 ## Open In Inventory 1.2.1 -> 2.0.0
 
 Breaking Changes:
-- The format of `enabled_items` has been changed to: `ItemID`, or `{ stack: ItemStack, sneak?: bool }`
+- The format of `enabled_items` has been changed to: `ItemID` or `{ stack: ItemStack, sneak?: bool }`
 
 New Features:
 - `add` command, with almost everything
