@@ -48,8 +48,8 @@ loom {
 
 stonecutter {
     replacements.string(eval(minecraft, "<1.20")) {
-        replace("net.minecraft.registry.Registries", "net.minecraft.util.registry.Registry")
-        replace("Registries.", "Registry.")
+        replace("net.minecraft.core.registries.BuiltInRegistries", "net.minecraft.core.Registry")
+        replace("BuiltInRegistries.ITEM", "Registry.ITEM")
     }
 }
 

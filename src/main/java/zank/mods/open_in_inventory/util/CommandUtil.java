@@ -29,8 +29,8 @@ public abstract class CommandUtil {
         boolean notifyAdmin
     ) {
         //? if < 1.20 {
-        //source.arch$sendSuccess(message.get(), notifyAdmin);
-        //? } else {
+        /*source.arch$sendSuccess(message.get(), notifyAdmin);
+        *///? } else {
         source.arch$sendSuccess(message, notifyAdmin);
         //? }
     }

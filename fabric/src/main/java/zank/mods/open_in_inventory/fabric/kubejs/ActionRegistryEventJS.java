@@ -1,7 +1,7 @@
 package zank.mods.open_in_inventory.fabric.kubejs;
 //? if <1.21 {
 import dev.latvian.mods.kubejs.event.EventJS;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 
 /**
