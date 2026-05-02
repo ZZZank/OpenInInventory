@@ -26,7 +26,7 @@ public record OpenInInventoryConfig(
     public OpenInInventoryConfig() {
         this(
             new HashSet<>(),
-            true,
+            false,
             true,
             3,
             false,
