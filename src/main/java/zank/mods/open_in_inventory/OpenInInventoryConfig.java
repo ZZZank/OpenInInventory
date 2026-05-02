@@ -15,7 +15,7 @@ import net.minecraft.client.resources.language.I18n;
  */
 public record OpenInInventoryConfig(
     @SerializedName("screen_blacklist") Set<String> screenBlacklist,
-    @SerializedName("require_enpty_main_hand") boolean requireEmptyMainHand,
+    @SerializedName("require_empty_main_hand") boolean requireEmptyMainHand,
     @SerializedName("require_single_stack") boolean requireSingleStack,
     @SerializedName("open_delay") int openDelay,
     @SerializedName("debug") boolean debug,
