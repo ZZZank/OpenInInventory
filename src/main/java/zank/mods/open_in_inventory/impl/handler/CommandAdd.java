@@ -111,11 +111,17 @@ abstract class CommandAdd {
                         .withStyle(ChatFormatting.GREEN)
                 )
             );
-            return 1;
+            return Command.SINGLE_SUCCESS;
         }
 
         try {
             addToCfg(cx, actionJsons);
+            CommandUtil.sendSuccess(
+                cx, () -> Component.translatable(
+                    "open_in_inventory.command.add",
+                    Component.literal(String.valueOf(actionJsons.size())).withStyle(ChatFormatting.GRAY)
+                ).withStyle(CommandUtil.hover(Component.literal(OpenInInventory.GSON.toJson(actionJsons))))
+            );
             return Command.SINGLE_SUCCESS;
         } catch (IOException e) {
             cx.getSource().arch$sendFailure(Component.literal("Failed to save config: " + e));
@@ -132,12 +138,5 @@ abstract class CommandAdd {
         config.write(OpenInInventory.CONFIG_PATH);
 
         OpenInInventory.refreshConfig();
-
-        CommandUtil.sendSuccess(
-            cx.getSource(), () -> Component.translatable(
-                "open_in_inventory.command.add",
-                Component.literal(String.valueOf(actionJsons.size())).withStyle(ChatFormatting.GRAY)
-            ).withStyle(CommandUtil.hover(Component.literal(OpenInInventory.GSON.toJson(actionJsons))))
-        );
     }
 }
