@@ -1,6 +1,7 @@
 package zank.mods.open_in_inventory.impl.handler;
 
 import dev.architectury.event.EventResult;
+import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import zank.mods.open_in_inventory.OpenInInventory;
@@ -137,6 +138,15 @@ public class ActionHandler {
         if (stage == ActionStage.SWAPPED && player != null && world.getGameTime() >= itemUseAtTime) {
             var action = this.action;
             if (action != null && action.match(player.getMainHandItem())) {
+                // player.closeContainer();
+                // ^ can be used for clearing container menu, so that when we open a chest after
+                // SWAP_BACK stage, it will not revert the inventory back to SWAPPED
+
+                // the two lines below is for simulating .closeContainer() without closing screen
+                // because closing screen will grab the mouse cursor, which is an awful experience
+                player.connection.send(new ServerboundContainerClosePacket(player.containerMenu.containerId));
+                player.containerMenu = player.inventoryMenu;
+
                 assert client.gameMode != null;
                 client.gameMode.useItem(player, InteractionHand.MAIN_HAND);
 
