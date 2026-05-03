@@ -1,5 +1,6 @@
 package zank.mods.open_in_inventory.impl.compat;
 
+import net.minecraft.resources.ResourceLocation;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 
@@ -17,6 +18,9 @@ public class CommonOpenInInventoryPlugin implements OpenInInventoryPlugin {
 
     @Override
     public void registerAction(OpenActionRegistry registry) {
+        registry.registerIfPresent(ResourceLocation.tryParse("written_book"));
+        registry.registerIfPresent(ResourceLocation.tryParse("writable_book"));
+
         var helper = new ModSupportHelper(registry);
         if (helper.check("scannable")) {
             helper.tryRegister("scanner", true);
