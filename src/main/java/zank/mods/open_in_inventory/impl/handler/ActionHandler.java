@@ -76,7 +76,7 @@ public class ActionHandler {
 
             if (OpenInInventory.CONFIG.debug()) {
                 OpenInInventory.LOGGER.info(
-                    "Attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
+                    "IDLE -> SWAPPED, attempt to swap slot(index {}, id {}) with hotbar {} in gui {}",
                     focused.getContainerSlot(),
                     focused.index,
                     swapTo,
@@ -130,7 +130,7 @@ public class ActionHandler {
         );
     }
 
-    public void scheduleItemUse(ClientLevel world) {
+    public void tick(ClientLevel world) {
         var client = Minecraft.getInstance();
         var player = client.player;
 
@@ -175,10 +175,9 @@ public class ActionHandler {
         }
     }
 
-    public void screenClosed() {
+    public void screenClosed(Minecraft client) {
         if (stage == ActionStage.USED) {
             stage = ActionStage.SWAP_BACK_SCREEN;
-            var client = Minecraft.getInstance();
             var player = client.player;
             if (player != null) {
                 if (OpenInInventory.CONFIG.debug()) {

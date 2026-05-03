@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
-import zank.mods.open_in_inventory.api.ScreenClosedEvent;
+import zank.mods.open_in_inventory.api.ScreenClearedEvent;
 import zank.mods.open_in_inventory.impl.compat.*;
 import zank.mods.open_in_inventory.impl.crt.ProvideCraftTweakerOpenAction;
 import zank.mods.open_in_inventory.impl.handler.ClientCommand;
@@ -51,8 +51,8 @@ public abstract class OpenInInventory {
         if (Platform.getEnvironment() == Env.CLIENT) {
             ClientTooltipEvent.ITEM.register(actionHandler::tooltip);
             ClientScreenInputEvent.MOUSE_CLICKED_PRE.register(actionHandler::beforeMouseClicked);
-            ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::scheduleItemUse);
-            ScreenClosedEvent.EVENT.register(actionHandler::screenClosed);
+            ClientTickEvent.CLIENT_LEVEL_PRE.register(actionHandler::tick);
+            ScreenClearedEvent.EVENT.register(actionHandler::screenClosed);
             ClientLifecycleEvent.CLIENT_LEVEL_LOAD.register(ClientEventHandler::clientStarted);
             ClientCommandRegistrationEvent.EVENT.register(ClientCommand::register);
         }

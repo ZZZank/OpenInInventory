@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import zank.mods.open_in_inventory.api.ScreenClosedEvent;
+import zank.mods.open_in_inventory.api.ScreenClearedEvent;
 
 /**
  * @author ZZZank
@@ -23,7 +23,7 @@ public abstract class MixinMinecraftClient {
     @Inject(method = "setScreen", at = @At("RETURN"))
     private void afterSetNewScreen(Screen screen, CallbackInfo ci) {
         if (this.screen == null) {
-            ScreenClosedEvent.EVENT.invoker().run();
+            ScreenClearedEvent.EVENT.invoker().onEvent((Minecraft) (Object) this);
         }
     }
 }
