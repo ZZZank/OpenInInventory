@@ -30,7 +30,7 @@ stonecutter {
          * with its own build script `build.{loader}.gradle.kts`.
          */
         fun match(project: String, vararg loaders: String, version: String = project) {
-            for (loader in loaders) version("$project-$loader", version).buildscript("build.$loader.gradle.kts")
+            for (loader in loaders) version("$project-$loader", version).buildscript("$loader/build.gradle.kts")
         }
 
         // Legacy Forge (1.19.2 / 1.20.1) is provided by `net.neoforged.moddev.legacyforge`,
