@@ -12,6 +12,7 @@ import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
 import zank.mods.open_in_inventory.api.ScreenClearedEvent;
 import zank.mods.open_in_inventory.impl.compat.*;
+//? if <26.1
 import zank.mods.open_in_inventory.impl.crt.ProvideCraftTweakerOpenAction;
 import zank.mods.open_in_inventory.impl.handler.ClientCommand;
 import zank.mods.open_in_inventory.impl.handler.ClientEventHandler;
@@ -61,9 +62,11 @@ public abstract class OpenInInventory {
     protected void registerPlugin(List<OpenInInventoryPlugin> plugins) {
         plugins.add(new CommonOpenInInventoryPlugin());
         plugins.add(new ProvideConfigOpenAction());
+        //? if <26.1 {
         if (Platform.isModLoaded("crafttweaker")) {
             plugins.add(new ProvideCraftTweakerOpenAction());
         }
+        //? }
     }
 
     public static boolean isScreenBlackListed(Screen screen) {

@@ -1,4 +1,5 @@
 package zank.mods.open_in_inventory.impl.crt;
+//? if <26.1 {
 
 import com.blamejared.crafttweaker.api.annotation.ZenRegister;
 import org.openzen.zencode.java.ZenCodeType;
@@ -44,3 +45,4 @@ public abstract class OpenInInventoryCrt {
         }
     }
 }
+//? }

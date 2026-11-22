@@ -1,0 +1,111 @@
+# Centralized build properties for all versions and loaders.
+# See https://stonecutter.kikugie.dev/wiki/config/properties
+#
+# Top-level keys apply to every node. Tables tagged with a Minecraft version
+# (e.g. ["1.20.1"]) or a loader+version (e.g. [forge."1.20.1"]) apply only to
+# the matching nodes - the tags are registered in `stonecutter.gradle.kts`.
+
+mod.id = "open_in_inventory"
+mod.name = "Open In Inventory"
+mod.group = "zank.mods"
+mod.version = "2.0.2"
+mod.authors = "Zank"
+mod.license = "LGPL-3.0"
+mod.description = "Open guidebooks, backpacks, handhelds and more with a single click in inventory"
+
+# Loom variant used by `dev.kikugie.loom-back-compat` for Fabric nodes
+loomx.loom_version = "1.18-SNAPSHOT"
+
+# debug / release / beta / alpha
+# debug -> debug mode, no file will be actually uploaded
+publish.type = "release"
+
+publish.modrinth = "zzHF1h48"
+publish.curseforge = "1450235"
+publish.github = "[GitHub repo, for example: ZZZank/OpenInInventory]"
+
+
+["1.19.2"]
+mod.mc_dep_fabric = ">=1.19 <=1.19.2"
+mod.mc_dep_forgelike = "[1.19, 1.19.2]"
+mod.mc_title = "1.19.2"
+mod.mc_targets = "1.19 1.19.2"
+mod.pack_format = "9"
+
+[fabric."1.19.2"]
+deps.fabric_loader = "0.18.4"
+deps.fabric_api = "0.77.0+1.19.2"
+deps.arch = "6.6.92"
+deps.kubejs = "1902.6.2-build.69"
+deps.rhino = "1902.2.3-build.284"
+deps.crafttweaker = "10.1.56"
+
+[forge."1.19.2"]
+deps.loader = "43.5.0"
+deps.arch = "6.6.92"
+deps.kubejs = "1902.6.2-build.69"
+deps.rhino = "1902.2.3-build.284"
+deps.crafttweaker = "10.1.56"
+
+
+["1.20.1"]
+mod.mc_dep_fabric = ">=1.20 <=1.20.1"
+mod.mc_dep_forgelike = "[1.20, 1.20.1]"
+mod.mc_title = "1.20.1"
+mod.mc_targets = "1.20 1.20.1"
+mod.pack_format = "15"
+
+[fabric."1.20.1"]
+deps.fabric_loader = "0.18.4"
+deps.fabric_api = "0.92.7+1.20.1"
+deps.arch = "9.2.14"
+deps.kubejs = "2001.6.4-build.138"
+deps.rhino = "2001.2.3-build.10"
+deps.crafttweaker = "14.0.59"
+
+[forge."1.20.1"]
+deps.loader = "47.3.0"
+deps.arch = "9.2.14"
+deps.kubejs = "2001.6.4-build.138"
+deps.rhino = "2001.2.3-build.10"
+deps.crafttweaker = "14.0.59"
+
+
+["1.21.1"]
+mod.mc_dep_fabric = ">=1.21 <=1.21.1"
+mod.mc_dep_forgelike = "[1.21, 1.21.1]"
+mod.mc_title = "1.21.1"
+mod.mc_targets = "1.21 1.21.1"
+mod.pack_format = "34"
+
+[fabric."1.21.1"]
+deps.fabric_loader = "0.18.4"
+deps.fabric_api = "0.116.8+1.21.1"
+deps.arch = "13.0.8"
+deps.crafttweaker = "21.0.35"
+
+[neoforge."1.21.1"]
+deps.neo_loader = "21.1.122"
+deps.arch = "13.0.8"
+deps.kubejs = "2101.7.2-build.348"
+deps.rhino = "2101.2.7-build.77"
+deps.crafttweaker = "21.0.35"
+
+
+["26.1.2"]
+mod.mc_dep_fabric = ">=26.1 <=26.1.2"
+mod.mc_dep_forgelike = "[26.1, 26.1.2]"
+mod.mc_title = "26.1.2"
+mod.mc_targets = "26.1 26.1.1 26.1.2"
+mod.pack_format = "84"
+
+[fabric."26.1.2"]
+deps.fabric_loader = "0.19.5"
+deps.fabric_api = "0.155.2+26.1.2"
+deps.arch = "20.1.18"
+
+[neoforge."26.1.2"]
+deps.neo_loader = "26.1.2.71"
+deps.arch = "20.1.18"
+deps.kubejs = "26.1.2-8.0.8"
+deps.rhino = "2101.2.8-build.91"

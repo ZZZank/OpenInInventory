@@ -1,4 +1,5 @@
 package zank.mods.open_in_inventory.impl.crt;
+//? if <26.1 {
 
 import zank.mods.open_in_inventory.api.OpenActionRegistry;
 import zank.mods.open_in_inventory.api.OpenInInventoryPlugin;
@@ -25,3 +26,4 @@ public class ProvideCraftTweakerOpenAction implements OpenInInventoryPlugin {
         }
     }
 }
+//? }
