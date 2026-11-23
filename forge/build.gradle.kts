@@ -1,18 +1,15 @@
-import java.util.function.BiConsumer
-
 plugins {
-    id("net.neoforged.moddev.legacyforge") version "2.0.147"
-    id("neoforge-mutex")
+    id("dev.kikugie.loom-back-compat")
     id("com.hypherionmc.modutils.modpublisher") version "2.2.3"
     `repo-convention`
 }
 
 // Structured properties are exposed as Gradle properties, so `-Pkey=value` overrides them
-fun prop(key: String): Any? = project.findProperty(key)
+fun prop(key: String): Any? = project.property(key)
 
 // DO NOT set group = ...!
 version = "${prop("mod.version")}+${sc.current.version}"
-base.archivesName.set("${prop("mod.id")}-forge")
+base.archivesName.set("${prop("mod.id")}-${prop("loom.platform")}")
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -29,14 +26,16 @@ val forgeVersion = prop("deps.loader") as String
 // Shared `src/` is linked in by Stonecutter; loader-specific sources are layered on top
 sourceSets {
     main {
-        java.srcDir(rootProject.file("forge/src/main/java"))
-        resources.srcDir(rootProject.file("forge/src/main/resources"))
+        java.srcDir(rootProject.file("${prop("loom.platform")}/src/main/java"))
+        resources.srcDir(rootProject.file("${prop("loom.platform")}/src/main/resources"))
     }
 }
 
 dependencies {
-    // Generates the mixin refmap from official to SRG names
-    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
+    minecraft("com.mojang:minecraft:${sc.current.version}")
+    loomx.applyMojangMappings()
+
+    forge("net.minecraftforge:forge:${sc.current.version}-${forgeVersion}")
 
     modImplementation("dev.architectury:architectury-forge:${prop("deps.arch")}") {
         isTransitive = false
@@ -62,29 +61,20 @@ dependencies {
     }
 }
 
-legacyForge {
-    // Versions can be found at https://files.minecraftforge.net/
-    version = "${sc.current.version}-$forgeVersion"
+loom {
+    forge.convertAccessWideners = true
+    forge.mixinConfigs("template-common.mixins.json",)
 
-    validateAccessTransformers = true
-
-    runs {
-        register("client") {
-            client()
-            gameDirectory = file("../../run") // Shares the run directory between versions
-        }
-
-        register("server") {
-            server()
-            programArgument("--nogui")
-            gameDirectory = file("../../run")
-        }
+    decompilerOptions.named("vineflower") {
+        options.put("mark-corresponding-synthetics", "1") // Adds names to lambdas - useful for mixins
     }
 
-    mods {
-        register(modId) {
-            sourceSet(sourceSets.main.get())
-        }
+    runConfigs.all {
+        preferGradleTask = true
+        generateRunConfig = true
+        runDirectory = rootProject.file("run") // Shares the run directory between versions
+        jvmArguments.add("-Dmixin.debug.export=true") // Exports transformed classes for debugging
+        jvmArguments.add("-Xmx2g")
     }
 }
 
@@ -98,37 +88,27 @@ java {
     }
 }
 
-// Legacy Forge runs on SRG names: mixin members declared with official names need a
-// refmap, and the config must be listed in the jar manifest.
-mixin {
-    add(sourceSets.main.get(), "$modId.refmap.json")
-    config(mixinConfig)
-}
-
 tasks {
     compileJava {
         options.encoding = "UTF-8"
+        // Few developers ship source jars, so keep parameter names for those who need them
         options.compilerArgs.add("-parameters")
     }
 
     processResources {
-        fun MutableMap<String, String>.register(key: String, value: String) {
-            inputs.property(key, value)
-            set(key, value)
-        }
-
         val props = buildMap {
-            register("id", modId)
-            register("name", prop("mod.name") as String)
-            register("version", prop("mod.version") as String)
-            register("authors", prop("mod.authors") as String)
-            register("license", prop("mod.license") as String)
-            register("description", prop("mod.description") as String)
-            register("minecraft", prop("mod.mc_dep_forgelike") as String)
-            register("pack_format", prop("mod.pack_format") as String)
-            register("forge_range", "[$forgeVersion,)")
-            register("loader_range", "[${forgeVersion.substringBefore('.')},)")
+            set("id", modId)
+            set("name", prop("mod.name") as String)
+            set("version", prop("mod.version") as String)
+            set("authors", prop("mod.authors") as String)
+            set("license", prop("mod.license") as String)
+            set("description", prop("mod.description") as String)
+            set("minecraft", prop("mod.mc_dep_forgelike") as String)
+            set("pack_format", prop("mod.pack_format") as String)
+            set("forge_range", "[$forgeVersion,)")
+            set("loader_range", "[${forgeVersion.substringBefore('.')},)")
         }
+        inputs.properties(props)
 
         filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) { expand(props) }
 
@@ -138,26 +118,13 @@ tasks {
         exclude("fabric.mod.json")
     }
 
-    jar {
-        manifest.attributes(mapOf("MixinConfigs" to mixinConfig))
-    }
-
-    // Node sources are generated by Stonecutter, so the game artifacts must wait for it
-    matching { it.name == "createMinecraftArtifacts" }.configureEach {
-        dependsOn("stonecutterGenerate")
-    }
-
     register<Copy>("buildAndCollect") {
         group = "build"
         description = "Builds mod jars and copies results to `build/libs/{mod version}`"
 
         inputs.property("version", prop("mod.version"))
-
-        dependsOn("reobfJar")
-        from(
-            named<AbstractArchiveTask>("reobfJar").flatMap { it.archiveFile },
-            named<Jar>("sourcesJar").flatMap { it.archiveFile },
-        )
+        // loomx.mod(Sources)Jar resolves the jar task of the active Loom variant
+        from(loomx.modJar.flatMap { it.archiveFile }, loomx.modSourcesJar.flatMap { it.archiveFile })
         into(rootProject.layout.buildDirectory.dir("libs/${prop("mod.version")}"))
     }
 }
@@ -181,6 +148,7 @@ publisher {
 
     val publishType = prop("publish.type") as String
     if (publishType == "debug") {
+        // No files will actually be uploaded
         debug.set(true)
     } else {
         versionType.set(publishType)
@@ -188,20 +156,21 @@ publisher {
 
     val modVersion = prop("mod.version") as String
     val mcVersionTitle = prop("mod.mc_title") as String
-    val platform = "forge"
+    val platform = prop("loom.platform") as String
 
     changelog.set(rootProject.file("CHANGELOG.md"))
     projectVersion.set(modVersion)
+    // Example: 1.2.3 for 1.20.1 fabric
     displayName.set("$modVersion for $mcVersionTitle $platform")
     gameVersions.set((prop("mod.mc_targets") as String).split(" "))
     loaders.set(listOf(platform))
-    artifact.set(tasks.named("reobfJar"))
+    artifact.set(loomx.modJar)
 }
 
-fun validatedProp(key: String, env: String, action: BiConsumer<String, String>) {
+fun validatedProp(key: String, env: String, action: (id: String, apiKey: String) -> Unit) {
     val projectID = prop(key) as String?
     val apiKey = System.getenv(env)
     if (projectID != null && !projectID.startsWith('[') && apiKey != null && apiKey.isNotEmpty()) {
-        action.accept(projectID, apiKey)
+        action(projectID, apiKey)
     }
 }

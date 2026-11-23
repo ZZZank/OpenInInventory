@@ -14,7 +14,7 @@ mod.license = "LGPL-3.0"
 mod.description = "Open guidebooks, backpacks, handhelds and more with a single click in inventory"
 
 # Loom variant used by `dev.kikugie.loom-back-compat` for Fabric nodes
-loomx.loom_version = "1.18-SNAPSHOT"
+loomx.loom_version = "1.17-SNAPSHOT"
 
 # debug / release / beta / alpha
 # debug -> debug mode, no file will be actually uploaded
@@ -33,6 +33,7 @@ mod.mc_targets = "1.19 1.19.2"
 mod.pack_format = "9"
 
 [fabric."1.19.2"]
+loom.platform = "fabric"
 deps.fabric_loader = "0.18.4"
 deps.fabric_api = "0.77.0+1.19.2"
 deps.arch = "6.6.92"
@@ -41,6 +42,7 @@ deps.rhino = "1902.2.3-build.284"
 deps.crafttweaker = "10.1.56"
 
 [forge."1.19.2"]
+loom.platform = "forge"
 deps.loader = "43.5.0"
 deps.arch = "6.6.92"
 deps.kubejs = "1902.6.2-build.69"
@@ -56,6 +58,7 @@ mod.mc_targets = "1.20 1.20.1"
 mod.pack_format = "15"
 
 [fabric."1.20.1"]
+loom.platform = "fabric"
 deps.fabric_loader = "0.18.4"
 deps.fabric_api = "0.92.7+1.20.1"
 deps.arch = "9.2.14"
@@ -64,6 +67,7 @@ deps.rhino = "2001.2.3-build.10"
 deps.crafttweaker = "14.0.59"
 
 [forge."1.20.1"]
+loom.platform = "forge"
 deps.loader = "47.3.0"
 deps.arch = "9.2.14"
 deps.kubejs = "2001.6.4-build.138"
@@ -79,12 +83,14 @@ mod.mc_targets = "1.21 1.21.1"
 mod.pack_format = "34"
 
 [fabric."1.21.1"]
+loom.platform = "fabric"
 deps.fabric_loader = "0.18.4"
 deps.fabric_api = "0.116.8+1.21.1"
 deps.arch = "13.0.8"
 deps.crafttweaker = "21.0.35"
 
 [neoforge."1.21.1"]
+loom.platform = "neoforge"
 deps.neo_loader = "21.1.122"
 deps.arch = "13.0.8"
 deps.kubejs = "2101.7.2-build.348"
@@ -100,11 +106,13 @@ mod.mc_targets = "26.1 26.1.1 26.1.2"
 mod.pack_format = "84"
 
 [fabric."26.1.2"]
+loom.platform = "fabric"
 deps.fabric_loader = "0.19.5"
 deps.fabric_api = "0.155.2+26.1.2"
 deps.arch = "20.1.18"
 
 [neoforge."26.1.2"]
+loom.platform = "neoforge"
 deps.neo_loader = "26.1.2.71"
 deps.arch = "20.1.18"
 deps.kubejs = "26.1.2-8.0.8"

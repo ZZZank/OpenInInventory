@@ -3,9 +3,9 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
         maven("https://maven.fabricmc.net/") { name = "FabricMC" }
-        maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
-        maven("https://maven.minecraftforge.net") { name = "MinecraftForge" }
         maven("https://maven.architectury.dev") { name = "Architectury" }
+        maven("https://maven.minecraftforge.net") { name = "MinecraftForge" }
+        maven("https://maven.neoforged.net/releases/") { name = "NeoForged" }
         maven("https://maven.kikugie.dev/releases") { name = "KikuGie Releases" }
         maven("https://maven.kikugie.dev/snapshots") { name = "KikuGie Snapshots" }
         maven("https://maven.firstdark.dev/releases") { name = "ModPublisher Release" }
@@ -30,7 +30,9 @@ stonecutter {
          * with its own build script `build.{loader}.gradle.kts`.
          */
         fun match(project: String, vararg loaders: String, version: String = project) {
-            for (loader in loaders) version("$project-$loader", version).buildscript("$loader/build.gradle.kts")
+            for (loader in loaders) {
+                version("$project-$loader", version).buildscript("$loader/build.gradle.kts")
+            }
         }
 
         // Legacy Forge (1.19.2 / 1.20.1) is provided by `net.neoforged.moddev.legacyforge`,
