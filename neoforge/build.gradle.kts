@@ -51,6 +51,13 @@ dependencies {
     // Rhino is only here to satisfy KubeJS' public signatures
     modCompileOnly("dev.latvian.mods:rhino:${prop("deps.rhino")}")
 
+    // CraftTweaker has no 26.x line yet; its integration is compiled out on those nodes
+    if (sc.current.parsed < "26.1") {
+        compileOnly("com.blamejared.crafttweaker:CraftTweaker-common-${sc.current.version}:${prop("deps.crafttweaker")}") {
+            isTransitive = false
+        }
+    }
+
     compileOnly("com.demonwav.mcdev:annotations:2.1.0")
 }
 
