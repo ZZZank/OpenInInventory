@@ -35,9 +35,7 @@ stonecutter {
             }
         }
 
-        // Legacy Forge (1.19.2 / 1.20.1) is provided by `net.neoforged.moddev.legacyforge`,
-        // NeoForge (1.21.1+) by `net.neoforged.moddev`.
-        match("1.19.2", "fabric", "forge")
+//        match("1.19.2", "fabric", "forge")
         match("1.20.1", "fabric", "forge")
         match("1.21.1", "fabric", "neoforge")
         match("26.1.2", "fabric", "neoforge")
