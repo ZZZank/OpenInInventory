@@ -14,13 +14,21 @@ import net.minecraft.network.chat.Style;
 public abstract class CommandUtil {
 
     public static Style clickToCopy(String value) {
-        return Style.EMPTY
-            .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, value))
-            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Click to copy")));
+        //? if <26.1
+        var click = new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, value);
+        //? else
+        //var click = new ClickEvent.CopyToClipboard(value);
+
+        return hover(Component.literal("Click to copy")).withClickEvent(click);
     }
 
     public static Style hover(Component value) {
-        return Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, value));
+        //? if <26.1
+        var hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, value);
+        //? else
+        //var hover = new HoverEvent.ShowText(value);
+
+        return Style.EMPTY.withHoverEvent(hover);
     }
 
     public static void sendSuccess(

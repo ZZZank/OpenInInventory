@@ -78,7 +78,9 @@ public abstract class OpenInInventory {
     }
 
     public static boolean isShiftPressed(Minecraft client) {
-        var handle = client.getWindow().getWindow();
+        var handle = client.getWindow()
+            //$ if <26.1 '.getWindow();' else ';'
+            .getWindow();
         return InputConstants.isKeyDown(handle, InputConstants.KEY_LSHIFT)
                || InputConstants.isKeyDown(handle, InputConstants.KEY_RSHIFT);
     }

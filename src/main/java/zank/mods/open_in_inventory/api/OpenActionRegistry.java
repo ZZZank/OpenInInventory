@@ -5,6 +5,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 /**
  * @author ZZZank
@@ -34,8 +35,10 @@ public interface OpenActionRegistry {
     }
 
     default Optional<OpenAction> registerIfPresent(ResourceLocation itemId, boolean sneak) {
-        var item = BuiltInRegistries.ITEM.get(itemId);
-        return item == null ? Optional.empty() : Optional.of(register(item, sneak));
+        var item = BuiltInRegistries.ITEM
+            //$ if <26.1 '.get(itemId);' else '.getValue(itemId);'
+            .get(itemId);
+        return item == null || item == Items.AIR ? Optional.empty() : Optional.of(register(item, sneak));
     }
 
     /// Equivalent of `registerIfPresent(..., false)`

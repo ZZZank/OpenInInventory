@@ -65,7 +65,10 @@ abstract class CommandAdd {
         var player = cx.getSource().arch$getPlayer();
 
         var stacks = options.contains(HOTBAR)
-            ? player.getInventory().items.subList(0, 9)
+            ? player.getInventory()
+                //$ if <26.1 '.items' else '.getNonEquipmentItems()'
+                .items
+                .subList(0, 9)
             : List.of(player.getMainHandItem());
 
         Function<ItemStack, OpenAction> actionCtor;
