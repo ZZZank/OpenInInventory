@@ -107,7 +107,7 @@ tasks {
         }
         inputs.properties(props)
 
-        filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) { expand(props) }
+        filesMatching(listOf("META-INF/neoforge.mods.toml", "pack.mcmeta")) { expand(props) }
 
         val mixinJava = "JAVA_${requiredJava.majorVersion}"
         filesMatching("*.mixins.json") { expand("java" to mixinJava) }
