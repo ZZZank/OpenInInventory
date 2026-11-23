@@ -1,8 +1,6 @@
-## Open In Inventory 2.0.1 -> 2.0.2
+## Open In Inventory 2.0.2 -> 2.1.0
 
-- fix: `require_empty_main_hand` config comment not localized
-- `require_empty_main_hand` now defaults to false
-- add support for vanilla `Written Book` and `Book and Quill`
-- fix: opening a container(e.g. chest) after using a stack will "swap the stack again"
+- 26.1.2 support
+- swapping mechanism rewritten to be cleaner and more universal
 
 ---
