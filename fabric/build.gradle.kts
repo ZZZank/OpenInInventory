@@ -1,7 +1,4 @@
-import java.util.function.BiConsumer
-
 plugins {
-    // Applies the correct Loom variant based on the Minecraft version
     id("dev.kikugie.loom-back-compat")
     id("com.hypherionmc.modutils.modpublisher") version "2.2.3"
     `repo-convention`
@@ -12,7 +9,7 @@ fun prop(key: String): Any? = project.findProperty(key)
 
 // DO NOT set group = ...!
 version = "${prop("mod.version")}+${sc.current.version}"
-base.archivesName.set("${prop("mod.id")}-fabric")
+base.archivesName.set("${prop("mod.id")}-${prop("loom.platform")}")
 
 val requiredJava: JavaVersion = when {
     sc.current.parsed >= "26.1" -> JavaVersion.VERSION_25
@@ -25,8 +22,8 @@ val requiredJava: JavaVersion = when {
 // Shared `src/` is linked in by Stonecutter; loader-specific sources are layered on top
 sourceSets {
     main {
-        java.srcDir(rootProject.file("fabric/src/main/java"))
-        resources.srcDir(rootProject.file("fabric/src/main/resources"))
+        java.srcDir(rootProject.file("${prop("loom.platform")}/src/main/java"))
+        resources.srcDir(rootProject.file("${prop("loom.platform")}/src/main/resources"))
     }
 }
 
@@ -58,6 +55,7 @@ dependencies {
 
     compileOnly("com.demonwav.mcdev:annotations:2.1.0")
 
+    // for testing
     if (sc.current.version == "1.20.1") {
         // Scannable: open with Shift + Right click
         modRuntimeOnly("curse.maven:forge-config-api-port-547434:7260491")
@@ -80,6 +78,7 @@ loom {
         generateRunConfig = true
         runDirectory = rootProject.file("run") // Shares the run directory between versions
         jvmArguments.add("-Dmixin.debug.export=true") // Exports transformed classes for debugging
+        jvmArguments.add("-Xmx2g")
     }
 }
 
@@ -101,18 +100,14 @@ tasks {
     }
 
     processResources {
-        fun MutableMap<String, String>.register(key: String, value: String) {
-            inputs.property(key, value)
-            set(key, value)
-        }
-
         val props = buildMap {
-            register("id", prop("mod.id") as String)
-            register("name", prop("mod.name") as String)
-            register("version", prop("mod.version") as String)
-            register("authors", prop("mod.authors") as String)
-            register("minecraft", prop("mod.mc_dep_fabric") as String)
+            set("id", prop("mod.id") as String)
+            set("name", prop("mod.name") as String)
+            set("version", prop("mod.version") as String)
+            set("authors", prop("mod.authors") as String)
+            set("minecraft", prop("mod.mc_dep_fabric") as String)
         }
+        inputs.properties(props)
 
         filesMatching("fabric.mod.json") { expand(props) }
 
@@ -158,7 +153,7 @@ publisher {
 
     val modVersion = prop("mod.version") as String
     val mcVersionTitle = prop("mod.mc_title") as String
-    val platform = "fabric"
+    val platform = prop("loom.platform") as String
 
     changelog.set(rootProject.file("CHANGELOG.md"))
     projectVersion.set(modVersion)
@@ -169,10 +164,10 @@ publisher {
     artifact.set(loomx.modJar)
 }
 
-fun validatedProp(key: String, env: String, action: BiConsumer<String, String>) {
+fun validatedProp(key: String, env: String, action: (id: String, apiKey: String) -> Unit) {
     val projectID = prop(key) as String?
     val apiKey = System.getenv(env)
     if (projectID != null && !projectID.startsWith('[') && apiKey != null && apiKey.isNotEmpty()) {
-        action.accept(projectID, apiKey)
+        action(projectID, apiKey)
     }
 }
