@@ -39,3 +39,9 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+/.ref/
+/.mcp.json
+/mcp.json
+AGENTS.md
+CLAUDE.md

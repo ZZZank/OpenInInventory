@@ -37,7 +37,7 @@ dependencies {
         isTransitive = false
     }
 
-    // KubeJS only ships a platform-agnostic artifact before 1.21; its later lines are loader-specific
+    // KubeJS is NeoForge only after 1.21
     if (sc.current.parsed < "1.21") {
         modCompileOnly("dev.latvian.mods:kubejs:${prop("deps.kubejs")}") {
             isTransitive = false
