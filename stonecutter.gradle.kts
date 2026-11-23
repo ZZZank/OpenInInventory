@@ -18,14 +18,18 @@ stonecutter parameters {
         match(loader, "fabric", "forge", "neoforge")
     }
 
-    swaps["mod_version"] = "\"${properties.get<String>("mod.version")}\";"
+    swaps["mod_version"] = "\"${properties["mod.version"]}\";"
     swaps["minecraft"] = "\"${node.metadata.version}\";"
+
+    replacements.string(current.parsed > "1.21.1") {
+        replace("ResourceLocation", "Identifier")
+    }
 }
 
 // Runs the client/server of whichever node is currently active
 for (type in listOf("Client", "Server")) {
     tasks.register("runActive$type") {
         group = "project"
-        dependsOn(":${stonecutter.current!!.project}:run$type")
+        dependsOn(":${stonecutter.active!!.project}:run$type")
     }
 }

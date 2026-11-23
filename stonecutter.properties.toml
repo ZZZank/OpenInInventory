@@ -13,9 +13,6 @@ mod.authors = "Zank"
 mod.license = "LGPL-3.0"
 mod.description = "Open guidebooks, backpacks, handhelds and more with a single click in inventory"
 
-# Loom variant used by `dev.kikugie.loom-back-compat` for Fabric nodes
-loomx.loom_version = "1.17-SNAPSHOT"
-
 # debug / release / beta / alpha
 # debug -> debug mode, no file will be actually uploaded
 publish.type = "release"
