@@ -26,8 +26,8 @@ val forgeVersion = prop("deps.loader") as String
 // Shared `src/` is linked in by Stonecutter; loader-specific sources are layered on top
 sourceSets {
     main {
-        java.srcDir(rootProject.file("${prop("loom.platform")}/src/main/java"))
-        resources.srcDir(rootProject.file("${prop("loom.platform")}/src/main/resources"))
+        java.srcDir(file("${prop("loom.platform")}/src/main/java"))
+        resources.srcDir(file("${prop("loom.platform")}/src/main/resources"))
     }
 }
 

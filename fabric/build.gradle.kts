@@ -5,7 +5,7 @@ plugins {
 }
 
 // Structured properties are exposed as Gradle properties, so `-Pkey=value` overrides them
-fun prop(key: String): Any? = project.findProperty(key)
+fun prop(key: String): Any? = project.property(key)
 
 // DO NOT set group = ...!
 version = "${prop("mod.version")}+${sc.current.version}"
@@ -22,8 +22,9 @@ val requiredJava: JavaVersion = when {
 // Shared `src/` is linked in by Stonecutter; loader-specific sources are layered on top
 sourceSets {
     main {
-        java.srcDir(rootProject.file("${prop("loom.platform")}/src/main/java"))
-        resources.srcDir(rootProject.file("${prop("loom.platform")}/src/main/resources"))
+        // NOTE: use `file(...)` directly to point to generated sources
+        java.srcDir(file("${prop("loom.platform")}/src/main/java"))
+        resources.srcDir(file("${prop("loom.platform")}/src/main/resources"))
     }
 }
 
@@ -37,7 +38,7 @@ dependencies {
         isTransitive = false
     }
 
-    // KubeJS is NeoForge only after 1.21
+    // KubeJS is NeoForge-only after 1.21
     if (sc.current.parsed < "1.21") {
         modCompileOnly("dev.latvian.mods:kubejs:${prop("deps.kubejs")}") {
             isTransitive = false
